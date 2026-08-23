@@ -9,9 +9,7 @@ const rootNode = document.querySelector("#root") as HTMLElement;
 const reactNode = createRoot(rootNode);
 
 reactNode.render(
-  <React.StrictMode>
       <Provider store={store}>
         <App />
       </Provider>
-  </React.StrictMode>
 );

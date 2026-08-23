@@ -25,9 +25,7 @@ const PeriodControls: React.FC<PeriodControlsProps> = ({isMobile}) => {
     const currentPeriod = useSelector(getCurrentPeriod);
     const periods = useSelector(getPeriods);
     const controlsHandler = (buttonId: number) => (e: SyntheticEvent<HTMLButtonElement>) => {
-        console.log("controlsHandler e.target: " + e.target);
         if (buttonId && !e) {
-            console.log("controlsHandler buttonId: " + buttonId);
             return controlsHandler(buttonId);
         }else if (e.target) {
             if (buttonId === 1)

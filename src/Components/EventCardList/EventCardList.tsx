@@ -8,14 +8,14 @@ import styles from './EventCardList.module.scss';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import './swiper-pagination.css';
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 
 interface EventCardListProps {
     isMobile: boolean;
 }
 
-const EventCardList: React.FC<EventCardListProps> = ({isMobile}) => {
+const EventCardList = forwardRef<HTMLDivElement, EventCardListProps>(({isMobile}, ref) => {
     const eventsList = useSelector(getEventsList);
     const [leftButtonVisible, setLeftButtonVisible] = useState(false);
     const [rightButtonVisible, setRightButtonVisible] = useState(true);
@@ -31,7 +31,7 @@ const EventCardList: React.FC<EventCardListProps> = ({isMobile}) => {
         }
     }, [isMobile]);
     return (
-        <div className={clsx([styles.container, isMobile ? styles.mobile : ''])}>
+        <div ref={ref} className={clsx([styles.container, isMobile ? styles.mobile : ''])}>
             {leftButtonVisible && <button 
                 onClick={() => swiperRef.current?.slidePrev()}
                 className={clsx([styles.button, styles.leftButton])}
@@ -84,5 +84,5 @@ const EventCardList: React.FC<EventCardListProps> = ({isMobile}) => {
             />}
             
         </div>
-    )};
+    )});
 export default EventCardList;

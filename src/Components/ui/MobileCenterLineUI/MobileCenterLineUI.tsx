@@ -1,7 +1,8 @@
+import { forwardRef } from 'react';
 import styles from './MobileCenterLineUI.module.scss';
 
-const MobileCenterLineUI = () => (
-        <div className={styles.line} />
-    )
+const MobileCenterLineUI = forwardRef<HTMLDivElement, {}>((props, ref) => (
+        <div ref={ref} className={styles.line} />
+    ))
 
 export default MobileCenterLineUI;

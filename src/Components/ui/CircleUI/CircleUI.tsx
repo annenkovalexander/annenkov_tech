@@ -17,30 +17,14 @@ const CircleUI = forwardRef<SVGPathElement, TCircleUIProps>(({radius}, ref) => {
     const circleRef = useRef<SVGPathElement | null>(null);
     useImperativeHandle(ref, () => circleRef.current!);
     return (
-        // <svg width={diameter} height={diameter} viewBox={`0 0 ${diameter} ${diameter}`} >
-        // <circle
-        //     ref={ref}
-        //     cx={radius}
-        //     cy={radius}
-        //     r={radius - (1 / 2)}
-        //     fill={"transparent"}
-        //     stroke={"#42567a"}
-        //     strokeWidth={1}
-        //     strokeOpacity={0.1}
-        // />
-        // </svg>
         <svg className={styles.container} width={diameter} height={diameter} viewBox={`0 0 ${diameter} ${diameter}`}>
-            {/* Circular path */}
             <path
                 ref={circleRef}
-                d={circlePath(radius, radius, radius - 3.5)}
+                d={circlePath(radius, radius, radius)}
                 fill="none"
-                stroke="transparent"
-            />
-            <path
-                d={circlePath(radius, radius, radius - 1)}
-                fill="none"
-                stroke="red"
+                stroke={'#42567a'}
+                strokeWidth={1}
+                strokeOpacity={0.1}
             />
         </svg>
   )

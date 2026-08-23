@@ -3,7 +3,7 @@
     "category": "Наука",
     "periodId": "1",
     "year1": 2016,
-    "year2": 2025,
+    "year2": 2021,
     "events": [
         {
             "year": 2015,
@@ -35,8 +35,8 @@
 {
     "category": "Литература",
     "periodId": "2",
-    "year1": 2017,
-    "year2": 2025,
+    "year1": 2015,
+    "year2": 2022,
     "events": [
         {
             "year": 2017,
@@ -84,7 +84,7 @@
     "category": "Наука",
     "periodId": "4",
     "year1": 2015,
-    "year2": 2022,
+    "year2": 2023,
     "events": [
         {
             "year": 2015,
@@ -117,7 +117,7 @@
     "category": "Литература",
     "periodId": "5",
     "year1": 2017,
-    "year2": 2025,
+    "year2": 2024,
     "events": [
         {
             "year": 2017,
@@ -140,7 +140,7 @@
 {
     "category": "Образование",
     "periodId": "6",
-    "year1": 2017,
+    "year1": 2011,
     "year2": 2025,
     "events": [
         {

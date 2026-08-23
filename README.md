@@ -12,4 +12,4 @@ npm install
 npm run start
 ```
 
-    3. Открыть проект по [ссылке](http://localhost:4001/)
+    3. Открыть проект по http://localhost:4001/

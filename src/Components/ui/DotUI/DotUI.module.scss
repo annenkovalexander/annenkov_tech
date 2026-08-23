@@ -5,17 +5,20 @@
 .dotContainer {
     display: flex;
     position: absolute;
-    visibility: hidden;
     width: 10px;
     height: 10px;
-    z-index: 5;
-}
-
-.container:not(.dotContainer.circleContainerVisible) + .container .dotContainer {
-    visibility: visible;
+    z-index: 10;
 }
 
 .container:not(.dotContainer.circleContainerVisible) + .container:hover .dotContainer {
+    visibility: hidden;
+}
+
+.dotContainer:not(:has(+.circleContainerVisible)) {
+    visibility: visible;
+}
+
+.dotContainer:has(+.circleContainerVisible) {
     visibility: hidden;
 }
 
