@@ -1,4 +1,4 @@
-import { Ref, RefObject, SyntheticEvent, forwardRef, useEffect, useState } from "react";
+import { forwardRef } from "react";
 import styles from './DotUI.module.scss';
 import clsx from "clsx";
 

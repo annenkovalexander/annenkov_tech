@@ -1,10 +1,8 @@
-import { RefObject, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CircleUI from "../ui/CircleUI/CircleUI";
-import { dot } from "node:test/reporters";
 import DotUI from "../ui/DotUI/DotUI";
 import { useDispatch, useSelector } from "../../../src/services/store";
-import { getCurrentPeriod, periodChange, getDots, dotsChange } from "../../../src/services/slices/periodsSlice";
-import RectangleUI from "../ui/RectangleUI/RectangleUI";
+import { getCurrentPeriod, periodChange, getDots } from "../../../src/services/slices/periodsSlice";
 import { SvgHorizontalLineUI, SvgVerticalLineUI } from "../ui/SVGLineUI/SVGLineUI";
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';

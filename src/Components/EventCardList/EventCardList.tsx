@@ -5,9 +5,9 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Swiper as SwiperType } from 'swiper';
 import { Navigation, Pagination } from 'swiper/modules';
 import styles from './EventCardList.module.scss';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import './swiper-pagination.css';
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 import { forwardRef, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 
@@ -39,6 +39,7 @@ const EventCardList = forwardRef<HTMLDivElement, EventCardListProps>(({isMobile}
             />}
             <Swiper
                 modules={[Navigation]}
+                direction="horizontal"
                 onBeforeInit={(swiper: SwiperType) => {
                     swiperRef.current = swiper;
                     setLeftButtonVisible(!swiperRef.current?.isBeginning);
