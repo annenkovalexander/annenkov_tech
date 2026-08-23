@@ -100,6 +100,7 @@
     "svgo-loader": "^4.0.0",
     "ts-jest": "^29.1.1",
     "ts-loader": "^9.5.1",
+    "ts-morph": "^28.0.0",
     "ts-node": "^10.9.2",
     "url-loader": "^4.1.1",
     "webpack": "^5.98.0",
@@ -117,7 +118,11 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "cypress": "./node_modules/.bin/cypress open",
-    "cypress:clear": "./node_modules/.bin/cypress cache clear"
+    "cypress:clear": "./node_modules/.bin/cypress cache clear",
+    "docs-generate:overview": "node ./scripts/generate-frontend-overview.mjs",
+    "docs-generate:api": "node ./scripts/generate-frontend-api-endpoints.mjs",
+    "docs-generate:contracts": "node ./scripts/generate-frontend-contracts.mjs",
+    "docs-generate:state": "node ./scripts/generate-frontend-store-and-state.mts"
   },
   "keywords": [
     "webpack",

@@ -36,7 +36,7 @@ const periodSlice = createSlice({
         getEventsList: (state: typeof initialState) => state.periods[state.currentPeriod - 1].events,
         getPageTitle: (state: typeof initialState) => state.pageTitle,
         getDots: (state: typeof initialState) => {
-            const circlePeriods = state.periods;
+            const circlePeriods = state.periods.slice(state.currentPeriod, state.periods.length);
             console.log("circlePeriods: ", circlePeriods);
             return circlePeriods.map((period, index) => ({
                 dotId: index,

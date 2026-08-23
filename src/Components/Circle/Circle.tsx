@@ -18,9 +18,6 @@ type RefElement<T> = {
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(MotionPathPlugin);
 
-
-
-
 const getCenterX = () => (Math.min(1440, window.innerWidth) / 2 - getCircleRadius());
 
 const getCenterY = () => 480 / 1440 * Math.min(1440, window.innerWidth) - getCircleRadius() - 50 * (Math.min(1440, window.innerWidth) - 1440) / 720;
@@ -48,24 +45,27 @@ const Circle: React.FC = () => {
     const [circleRadius, setCircleRadius] = useState(getCircleRadius());
     const [width, setWidth] = useState(window.innerWidth);
     const dispatch = useDispatch();
+    
     const { contextSafe } = useGSAP({scope: container});
     const handleDotClick = (el: RefElement<HTMLDivElement>, index: number) => () => {
-        dispatch(periodChange({periodIndex: el.periodId}));
-        gsap.to(el.element, {
-            duration: 1,
-            repeat: 0,
-            ease: "none",
-            motionPath: {
-                path: pathRef.current!,
-                align: pathRef.current!,
-                // alignOrigin: [1, 0.5],
-                autoRotate: false,
-                // start: index / dots.length,
-                // end: (index - 1) / dots.length
-                start: 0,
-                end: 1
-            }
-          });
+        
+        // gsap.to(el.element, {
+        //     duration: 1,
+        //     repeat: 0,
+        //     ease: "none",
+        //     motionPath: {
+        //         path: pathRef.current!,
+        //         align: pathRef.current!,
+        //         // alignOrigin: [1, 0.5],
+        //         autoRotate: false,
+        //         // start: index / dots.length,
+        //         // end: (index - 1) / dots.length
+        //         start: 0,
+        //         end: 1
+        //     }
+        //   });
+
+          dispatch(periodChange({periodIndex: el.periodId}))
     }
     const currentPeriod = useSelector(getCurrentPeriod);
     const dots = useSelector(getDots);
