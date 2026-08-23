@@ -1,7 +1,7 @@
 import { periodChange } from "../../../src/services/slices/periodsSlice";
 import { useDispatch } from "../../../src/services/store";
 import PaginationUI from "../ui/PaginationUI/PaginationUI";
-import { periodType } from "../../../src/services/types";
+import type { periodType } from "../../../src/services/types";
 
 interface PaginationProps {
     periods: periodType[];

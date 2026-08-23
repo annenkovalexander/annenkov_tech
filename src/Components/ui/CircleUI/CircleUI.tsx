@@ -1,4 +1,4 @@
-import React, { RefObject, useImperativeHandle } from "react";
+import { useImperativeHandle } from "react";
 import { forwardRef, useEffect, useRef } from "react";
 import styles from './CircleUI.module.scss';
 

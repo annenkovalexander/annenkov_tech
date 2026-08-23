@@ -1,143 +1,314 @@
-const path = require('path');
-const ESLintPlugin = require('eslint-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const Dotenv = require('dotenv-webpack');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const path = require("path");
 
+const ESLintPlugin = require("eslint-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const Dotenv = require("dotenv-webpack");
+const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+
+const isProduction = process.env.NODE_ENV === "production";
+const shouldAnalyze = process.env.ANALYZE === "true";
+
+const postcssOptions = {
+  postcssOptions: {
+    plugins: [
+      require("@zeecoder/postcss-container-query"),
+      require("postcss-preset-env")({
+        features: {
+          "nesting-rules": true,
+        },
+      }),
+    ],
+  },
+};
+
+const getStyleLoaders = ({ modules = false } = {}) => [
+  isProduction ? MiniCssExtractPlugin.loader : "style-loader",
+
+  {
+    loader: "css-loader",
+    options: {
+      modules: modules
+        ? {
+            localIdentName: isProduction
+              ? "[hash:base64:6]"
+              : "[name]__[local]___[hash:base64:5]",
+          }
+        : undefined,
+
+      importLoaders: 2,
+      sourceMap: !isProduction,
+    },
+  },
+
+  {
+    loader: "postcss-loader",
+    options: {
+      ...postcssOptions,
+      sourceMap: !isProduction,
+    },
+  },
+
+  {
+    loader: "sass-loader",
+    options: {
+      sourceMap: !isProduction,
+    },
+  },
+];
 
 module.exports = {
-  entry: path.resolve(__dirname, './src/index.tsx'),
+  mode: isProduction ? "production" : "development",
+
+  target: "web",
+
+  entry: {
+    main: path.resolve(__dirname, "./src/index.tsx"),
+  },
+
+  devtool: isProduction ? "source-map" : "eval-source-map",
+
   module: {
     rules: [
       {
-        test: /\.svg$/,
-        type: 'asset/resource'
+        test: /\.tsx?$/i,
+        exclude: /node_modules/,
+        use: {
+          loader: "ts-loader",
+          options: {
+            transpileOnly: true,
+          },
+        },
       },
+
+      {
+        test: /\.(js|jsx)$/i,
+        exclude: /node_modules/,
+        use: "babel-loader",
+      },
+
       {
         test: /\.html$/i,
-        use: [{
-          loader: 'html-loader',
+        use: {
+          loader: "html-loader",
           options: {
             sources: {
               list: [
-                '...',
+                "...",
                 {
-                  tag: 'script',
-                  attribute: 'src',
-                  type: 'src',
-                  filter: (tag) => {
-                    // tag is a string path, not an HTML element
-                    return tag.endsWith('.js');
-                  }
-                }
-              ]
-            }
-          }
-        }],
-      },
-      {
-        test: /\.(png|jpg|jpeg)$/i,
-        type: 'asset/resource',
-        generator: {
-          filename: 'images/[name][ext][query]'
-        }
-      },
-      {
-        test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
-        use: ['babel-loader']
-      },
-      {
-        test: /\.(ts)x?$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'ts-loader'
-        }
-      },
-      {
-        test: /\.css$/,
-        exclude: /\.module\.css$/,
-        use: ['style-loader', 'css-loader']
-      },
-      {
-        test: /\.scss$/,
-        use: [
-          'style-loader',
-          'css-loader',
-          {
-            loader: 'postcss-loader',
-            options: {
-              postcssOptions: {
-                plugins: [
-                  require('@zeecoder/postcss-container-query'), // Container queries
-                  require('postcss-preset-env')({ // Other modern CSS features
-                    features: {
-                      'nesting-rules': true
-                    }
-                  })
-                ]
-              }
-            }
+                  tag: "script",
+                  attribute: "src",
+                  type: "src",
+                  filter: (tag, attribute, attributes) => {
+                    const src = attributes?.src || "";
+
+                    return src.endsWith(".js");
+                  },
+                },
+              ],
+            },
           },
+        },
+      },
+
+      {
+        test: /\.module\.scss$/i,
+        use: getStyleLoaders({
+          modules: true,
+        }),
+      },
+
+      {
+        test: /\.scss$/i,
+        exclude: /\.module\.scss$/i,
+        use: getStyleLoaders(),
+      },
+
+      {
+        test: /\.module\.css$/i,
+        use: [
+          isProduction ? MiniCssExtractPlugin.loader : "style-loader",
+
           {
-            loader: 'sass-loader',
+            loader: "css-loader",
             options: {
-              sourceMap: true,
+              modules: {
+                localIdentName: isProduction
+                  ? "[hash:base64:6]"
+                  : "[name]__[local]___[hash:base64:5]",
+              },
+
+              importLoaders: 0,
+              sourceMap: !isProduction,
             },
           },
         ],
       },
+
       {
-        test: /\.module\.css$/i,
-        exclude: /node_modules/,
+        test: /\.css$/i,
+        exclude: /\.module\.css$/i,
         use: [
-          'style-loader',
+          isProduction ? MiniCssExtractPlugin.loader : "style-loader",
+
           {
-            loader: 'css-loader',
+            loader: "css-loader",
             options: {
-              modules: true
-            }
-          }
-        ]
+              importLoaders: 0,
+              sourceMap: !isProduction,
+            },
+          },
+        ],
       },
+
       {
-        test: /\.(woff|woff2)$/,
-        type: 'asset/resource'
-      }
-    ]
+        test: /\.(png|jpe?g|gif|webp|svg)$/i,
+        type: "asset/resource",
+
+        generator: {
+          filename: "images/[name].[contenthash][ext]",
+        },
+      },
+
+      {
+        test: /\.(woff2?|eot|ttf|otf)$/i,
+        type: "asset/resource",
+
+        generator: {
+          filename: "fonts/[name].[contenthash][ext]",
+        },
+      },
+    ],
   },
+
   plugins: [
     new ESLintPlugin({
-      extensions: ['.js', '.jsx', '.ts', '.tsx']
+      extensions: [".js", ".jsx", ".ts", ".tsx"],
     }),
+
     new HtmlWebpackPlugin({
-      template: './public/index.html'
+      template: path.resolve(__dirname, "./public/index.html"),
+      scriptLoading: "defer",
     }),
-    new Dotenv()
+
+    new Dotenv({
+      systemvars: true,
+    }),
+
+    new MiniCssExtractPlugin({
+      filename: "css/[name].[contenthash].css",
+      chunkFilename: "css/[name].[contenthash].chunk.css",
+    }),
+
+    ...(shouldAnalyze
+      ? [
+          new BundleAnalyzerPlugin({
+            analyzerMode: "static",
+            openAnalyzer: false,
+            reportFilename: "bundle-report.html",
+            generateStatsFile: true,
+            statsFilename: "stats.json",
+          }),
+        ]
+      : []),
   ],
+
   resolve: {
-    extensions: [
-      '*',
-      '.js',
-      '.jsx',
-      '.ts',
-      '.tsx',
-      '.json',
-      '.css',
-      '.scss',
-      '.png',
-      '.jpg'
-    ]
+    extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
   },
+
   output: {
-    path: path.resolve(__dirname, './dist'),
-    filename: 'bundle.js',
-    publicPath: process.env.PUBLIC_PATH ? process.env.PUBLIC_PATH : '/'
+    path: path.resolve(__dirname, "./dist"),
+
+    filename: "js/[name].[contenthash].js",
+
+    chunkFilename: "js/[name].[contenthash].chunk.js",
+
+    assetModuleFilename: "assets/[name].[contenthash][ext]",
+
+    clean: true,
+
+    publicPath: process.env.PUBLIC_PATH || "/",
+
+    uniqueName: "only-digital",
+
+    crossOriginLoading: "anonymous",
   },
+
+  optimization: {
+    minimize: isProduction,
+
+    moduleIds: "deterministic",
+
+    chunkIds: "deterministic",
+
+    runtimeChunk: {
+      name: "runtime",
+    },
+
+    splitChunks: {
+      chunks: "all",
+
+      minSize: 20 * 1024,
+
+      maxAsyncRequests: 20,
+
+      maxInitialRequests: 20,
+
+      name: false,
+
+      cacheGroups: {
+        defaultVendors: {
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10,
+          reuseExistingChunk: true,
+          idHint: "vendors",
+        },
+
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true,
+        },
+      },
+    },
+  },
+
+  performance: {
+    hints: isProduction ? "warning" : false,
+
+    maxAssetSize: 300 * 1024,
+
+    maxEntrypointSize: 300 * 1024,
+  },
+
   devServer: {
-    static: path.join(__dirname, './dist'),
+    static: {
+      directory: path.join(__dirname, "./dist"),
+    },
+
     compress: true,
+
     historyApiFallback: true,
-    port: 4001
-  }
+
+    port: 4001,
+
+    hot: true,
+
+    open: false,
+  },
+
+  stats: {
+    preset: "normal",
+
+    colors: true,
+
+    assets: true,
+
+    chunks: true,
+
+    modules: false,
+
+    children: false,
+  },
 };

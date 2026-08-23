@@ -1,7 +1,7 @@
 // import '../../EventCardList/swiper-pagination';
 import clsx from 'clsx';
 import styles from './PaginationUI.module.scss';
-import { periodType } from '../../../../src/services/types';
+import type { periodType } from '../../../../src/services/types';
 
 
 interface PaginationUIProps {

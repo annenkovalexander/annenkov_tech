@@ -5,8 +5,6 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Swiper as SwiperType } from 'swiper';
 import { Navigation, Pagination } from 'swiper/modules';
 import styles from './EventCardList.module.scss';
-import 'swiper/css';
-import 'swiper/css/navigation';
 import './swiper-pagination.css';
 import { forwardRef, useEffect, useRef, useState } from "react";
 import clsx from "clsx";

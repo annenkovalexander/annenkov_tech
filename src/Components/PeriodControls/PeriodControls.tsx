@@ -1,4 +1,4 @@
-import { SyntheticEvent } from "react"
+import type { SyntheticEvent } from "react"
 import PeriodControlsUI from "../ui/PeriodControlsUI/PeriodControlsUI";
 import { useDispatch, useSelector } from "../../../src/services/store";
 import { decrementPeriod, getCurrentPeriod, getPeriods, incrementPeriod } from "../../../src/services/slices/periodsSlice";

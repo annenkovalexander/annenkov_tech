@@ -1,4 +1,4 @@
-import { SyntheticEvent } from 'react';
+import type { SyntheticEvent } from 'react';
 import { clsx } from 'clsx';
 import styles from './PeriodControlsUI.module.scss';
 
