@@ -1,54 +1,83 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import periods from '../mock.json';
+import type { Period } from '../api/getEvents';
 
 export const initialState = {
-    pageTitle: 'Исторические даты',
-    currentPeriod: 1,
-    periods: periods
+    pageTitle: 'Основные события',
+    currentPeriod: "",
+    periods: []
 };
 
-type PeriodIndex = {
-    periodIndex: string;
+
+type AppState = {
+    pageTitle: string,
+    currentPeriod: string,
+    periods: Period[],
+}
+
+type PeriodId = {
+    periodId: string
+}
+
+type PeriodsData = Period[];
+
+const getPeriodById: (state: AppState) => AppState['periods'][number] | undefined = (state) => {
+    if (!Array.isArray(state.periods)) {
+        return undefined;
+    }
+    return state.periods.find((period) => period.periodId === state.currentPeriod);
+}
+
+const getPeriodIndexById: (state: AppState) => number = (state) => {
+    if(!Array.isArray(state.periods)) {
+        return -1;
+    }
+    return state.periods.findIndex((period) => period.periodId === state.currentPeriod);
 }
 
 const periodSlice = createSlice({
     name: 'periods',
     initialState,
     reducers: {
-        periodChange: (state: typeof initialState, action: PayloadAction<PeriodIndex>) => {
-            state.currentPeriod = Number(action.payload.periodIndex);
+        setData: (state: AppState, action: PayloadAction<PeriodsData>) => {
+            state.periods = action.payload;
+            if (state.currentPeriod === "" && action.payload.length > 0) {
+                state.currentPeriod = state.periods[0].periodId
+            }
         },
-        incrementPeriod: (state: typeof initialState) => {
-            if (state.currentPeriod < state.periods.length)
-                state.currentPeriod += 1;
+        periodChange: (state: AppState, action: PayloadAction<PeriodId>) => {
+            state.currentPeriod = action.payload.periodId;
         },
-        decrementPeriod: (state: typeof initialState) => {
-            if (state.currentPeriod > 1)
-                state.currentPeriod -= 1;
+        incrementPeriod: (state: AppState) => {
+            let currentPeriodIndex = getPeriodIndexById(state);
+            if (currentPeriodIndex !== -1 && currentPeriodIndex < state.periods.length - 1){
+                state.currentPeriod = state.periods[currentPeriodIndex + 1].periodId;
+            }
         },
-        dotsChange: (state: typeof initialState) => {
-            state.periods = state.periods.slice(state.currentPeriod-1).concat(state.periods.slice(0, state.currentPeriod-1))
+        decrementPeriod: (state: AppState) => {
+            let currentPeriodIndex = getPeriodIndexById(state);
+            if (currentPeriodIndex > 0) {
+                state.currentPeriod = state.periods[currentPeriodIndex - 1].periodId;
+            }
         }
     },
     selectors: {
-        getPeriods: (state: typeof initialState) => state.periods,
-        getCurrentPeriod: (state: typeof initialState) => state.currentPeriod,
-        getPeriodTitle: (state: typeof initialState) => state.periods[state.currentPeriod-1].category,
-        getCurrentPeriodData: (state: typeof initialState) => state.periods[state.currentPeriod-1],
-        getEventsList: (state: typeof initialState) => state.periods[state.currentPeriod-1].events,
-        getPageTitle: (state: typeof initialState) => state.pageTitle,
-        getDots: (state: typeof initialState) => {
-            const circlePeriods = state.periods;
-            return circlePeriods.map((period, index) => ({
-                dotId: index,
-                dotDescription: period.category,
-                periodId: period.periodId
-            }))
-        }
+        getPeriods: (state: AppState) => state.periods || [],
+        getCurrentPeriod: (state: AppState) => state.currentPeriod,
+        getCurrentPeriodData: (state: AppState) => getPeriodById(state),
+        getPeriodTitle: (state: AppState) => {
+            const foundPeriod = getPeriodById(state);
+            return foundPeriod?.category ?? '';
+        },
+        getEventsList: (state: AppState) => {
+            const foundPeriod = getPeriodById(state);
+            return foundPeriod?.events ?? [];
+        },
+        getPageTitle: (state: AppState) => state.pageTitle,
+        getPeriodNumber: (state: AppState) => getPeriodIndexById(state) + 1
     }
 });
 
 export default periodSlice;
-export const { incrementPeriod, decrementPeriod, periodChange, dotsChange } = periodSlice.actions;
-export const { getPeriods, getCurrentPeriod, getCurrentPeriodData, getEventsList, getPageTitle, getDots, getPeriodTitle } = periodSlice.selectors; 
+export const { setData, incrementPeriod, decrementPeriod, periodChange } = periodSlice.actions;
+export const { getPeriods, getCurrentPeriod, getCurrentPeriodData, getEventsList, getPageTitle, getPeriodTitle, getPeriodNumber } = periodSlice.selectors; 

@@ -1,7 +1,7 @@
 import type { SyntheticEvent } from "react"
 import PeriodControlsUI from "../ui/PeriodControlsUI/PeriodControlsUI";
 import { useDispatch, useSelector } from "../../../src/services/store";
-import { decrementPeriod, getCurrentPeriod, getPeriods, incrementPeriod } from "../../../src/services/slices/periodsSlice";
+import { decrementPeriod, getCurrentPeriod, getPeriods, incrementPeriod, getPeriodNumber } from "../../../src/services/slices/periodsSlice";
 import PaginationUI from "../ui/PaginationUI/PaginationUI";
 import Pagination from "../Pagination/Pagination";
 import styles from './PeriodControls.module.scss';
@@ -22,7 +22,7 @@ const getButtonsActive: (periodsNumber: number, currentPeriod: number) => boolea
 
 const PeriodControls: React.FC<PeriodControlsProps> = ({isMobile}) => {
     const dispatch = useDispatch();
-    const currentPeriod = useSelector(getCurrentPeriod);
+    const periodNumber = useSelector(getPeriodNumber);
     const periods = useSelector(getPeriods);
     const controlsHandler = (buttonId: number) => (e: SyntheticEvent<HTMLButtonElement>) => {
         if (buttonId && !e) {
@@ -36,8 +36,8 @@ const PeriodControls: React.FC<PeriodControlsProps> = ({isMobile}) => {
     }
     return (
         <div className={styles.container}>
-            <PeriodControlsUI periodsNumber={periods.length} currentPeriod={currentPeriod} buttonsActive={getButtonsActive(periods.length, currentPeriod)} controlsHandler={controlsHandler} isMobile={isMobile}/>
-            {isMobile && <Pagination periods={periods} currentPeriod={currentPeriod}/>}
+            <PeriodControlsUI periodsNumber={periods.length} periodNumber={periodNumber} buttonsActive={getButtonsActive(periods.length, periodNumber)} controlsHandler={controlsHandler} isMobile={isMobile}/>
+            {isMobile && <Pagination periods={periods} periodNumber={periodNumber}/>}
         </div>
     )
 }

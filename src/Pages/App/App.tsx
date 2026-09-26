@@ -19,7 +19,12 @@ import PeriodTitle from "../../Components/PeriodTitle/PeriodTitle";
 import styles from "./App.module.scss";
 
 import { useSelector } from "../../services/store";
-import { getCurrentPeriod } from "../../services/slices/periodsSlice";
+import { getCurrentPeriod, getCurrentPeriodData, getEventsList, setData } from "../../services/slices/periodsSlice";
+import { fetchData, getEvents } from "../../services/api/getEvents";
+import type { Event } from "../../services/api/getEvents";
+import periods from "../../services/mock.json"
+import { useDispatch } from "../../services/store";
+import Header from "../../Components/Header/Header";
 
 const EventCardList = lazy(
   () =>
@@ -35,17 +40,30 @@ const App = () => {
   const [isMobile, setIsMobile] = useState(
     window.innerWidth <= MOBILE_BREAKPOINT
   );
-
+  const dispatch = useDispatch();
   const container = useRef<HTMLDivElement | null>(null);
   const periodTitleRef = useRef<HTMLDivElement | null>(null);
   const mobileLineRef = useRef<HTMLDivElement | null>(null);
-  const eventsCardsList = useRef<HTMLDivElement | null>(null);
-
+  const eventsCardsListRef = useRef<HTMLDivElement | null>(null);
+  const periodsData = useSelector(getCurrentPeriodData)
+  const eventsList = useSelector(getEventsList);
+  const [error, setError] = useState<string>('');
+  const [status, setStatus] = useState<string>('Загрузка данных ...')
   const currentPeriod = useSelector(getCurrentPeriod);
+
+  
+  useEffect(() => {
+    fetchData(1500).then((response) => response.json()).then(
+      periods => {
+        dispatch(setData(periods))
+        setStatus('')
+      })
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
+      
     };
 
     window.addEventListener("resize", handleResize);
@@ -81,9 +99,9 @@ const App = () => {
         );
       }
 
-      if (eventsCardsList.current) {
+      if (eventsCardsListRef .current) {
         gsap.fromTo(
-          eventsCardsList.current,
+          eventsCardsListRef .current,
           { opacity: 0, y: 10 },
           {
             duration: 1,
@@ -105,8 +123,7 @@ const App = () => {
       className={styles.container}
     >
       {!isMobile && <Circle />}
-
-      <Title isMobile={isMobile} />
+      <Header />
       <Period />
 
       {isMobile && (
@@ -117,6 +134,7 @@ const App = () => {
         <MobileCenterLineUI ref={mobileLineRef} />
       )}
 
+      
       <div
         className={clsx(
           styles.eventsContainer,
@@ -125,8 +143,7 @@ const App = () => {
             : styles.sliderLayoutDesktop
         )}
       >
-        <PeriodControls isMobile={isMobile} />
-
+        {!isMobile && eventsList.length > 0 && (<PeriodControls isMobile={isMobile} />)}
         <Suspense
           fallback={
             <div className={styles.loader}>
@@ -135,11 +152,14 @@ const App = () => {
           }
         >
           <EventCardList
-            ref={isMobile ? eventsCardsList : null}
+            ref={isMobile ? eventsCardsListRef : null}
             isMobile={isMobile}
+            eventsList={eventsList}
           />
         </Suspense>
+        {isMobile && eventsList.length > 0 && (<PeriodControls isMobile={isMobile} />)}
       </div>
+      
     </div>
   );
 };

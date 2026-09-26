@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import PeriodUI from "../ui/PeriodUI/PeriodUI";
 import { useSelector } from "../../../src/services/store";
 import { getCurrentPeriodData } from "../../../src/services/slices/periodsSlice";
+import styles from './Period.module.scss';
 
 
 type TYearOld = {
@@ -24,14 +25,24 @@ const Period: React.FC = () => {
     const year1Old = useRef<number>();
     const year2Old = useRef<number>();
     useEffect(() => {
-        year1Old.current = yearsData.year1;
-        year2Old.current = yearsData.year2;
+        year1Old.current = yearsData?.startYear! ?? 2026;
+        year2Old.current = yearsData?.endYear! ?? 2026;
     }, [yearsData]);
-    return (
-        <>
-            <PeriodUI year1List={year1Old.current ? getYearList(yearsData.year1, year1Old.current) : getYearList(yearsData.year1, yearsData.year1)} year2List={year2Old.current ? getYearList(yearsData.year2, year2Old.current) : getYearList(yearsData.year2, yearsData.year2)} />
-        </>
-    )   
+    if (yearsData) {
+        return (
+            <>
+                <PeriodUI year1List={yearsData && year1Old.current ? getYearList(yearsData!.startYear!, year1Old.current) : getYearList(yearsData!.startYear!, yearsData!.startYear!)} year2List={year2Old.current ? getYearList(yearsData!.endYear!, year2Old.current) : getYearList(yearsData!.endYear!, yearsData!.endYear!)} />
+            </>
+        )
+    }
+    else {
+        return (
+            <div className={styles.container}>
+                Загружаем события...
+            </div>
+        )
+    }
+       
 }
 
 export default Period;
