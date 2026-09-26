@@ -1,12 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import CircleUI from "../ui/CircleUI/CircleUI";
 import DotUI from "../ui/DotUI/DotUI";
 import { useDispatch, useSelector } from "../../../src/services/store";
-import { getCurrentPeriod, periodChange, getDots } from "../../../src/services/slices/periodsSlice";
+import { getCurrentPeriod, periodChange, getPeriods } from "../../../src/services/slices/periodsSlice";
 import { SvgHorizontalLineUI, SvgVerticalLineUI } from "../ui/SVGLineUI/SVGLineUI";
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
+import { useViewport } from "../../services/hooks/useViewport";
+import type { Viewport } from "../../services/hooks/useViewport";
 
 type RefElement<T> = {
     element: T,
@@ -14,7 +16,7 @@ type RefElement<T> = {
     position: number
 }
 
-type TRefsObject<T> = {
+export type TRefsObject<T> = {
     newPositions: number[],
     refElements: RefElement<HTMLDivElement>[]
 }
@@ -22,55 +24,89 @@ type TRefsObject<T> = {
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(MotionPathPlugin);
 
-const getCenterX = () => (Math.min(1440, window.innerWidth) / 2 - getCircleRadius());
+const getCenterX: (viewport: Viewport) => number = (viewPort) => (Math.min(1440, viewPort.width) / 2 - getCircleRadius(viewPort));
 
-const getCenterY = () => 480 / 1440 * Math.min(1440, window.innerWidth) - getCircleRadius() - 50 * (Math.min(1440, window.innerWidth) - 1440) / 720;
+const getCenterY: (viewport: Viewport) => number = (viewPort) => 480 / 1440 * Math.min(1440, viewPort.width) - getCircleRadius(viewPort) - 50 * (Math.min(1440, viewPort.width) - 1440) / 720;
 
-const getDotCoordinates: (a: number, dotIndex:number, radius: number, containerXShift: number, containerYShift: number) => {x: number, y: number}  = (dotsNumber, dotIndex, radius) => {
-    const circleCenterXCoordinate = radius;
-    const circleCenterYCoordinate = radius;
-    const xCoordinate = circleCenterXCoordinate + radius * Math.sin(2 * Math.PI * dotIndex / dotsNumber - 1 / 3 * Math.PI) - 3;
-    const yCoordinate = circleCenterYCoordinate + radius * Math.cos(2 * Math.PI * dotIndex / dotsNumber - 1 / 3 * Math.PI) - 3;
+
+
+
+const getPercentageByDotIndex: (dotIndex: number, dotsLength: number) => number = (dotIndex, dotsLength) => (dotIndex/dotsLength);
+
+const getCircleRadius: (viewport: Viewport) => number = (viewPort) => 530 / 1440 * Math.min(1440, viewPort.width) / 2;
+
+const getDelta: (element: RefElement<HTMLDivElement>, periodsLength: number) => number = (el, periodsLength) => {
+    const position = Math.abs(el.position % periodsLength);
+    if (Math.abs(position - periodsLength) < position) {
+        return (periodsLength - position);
+    } else {
+        return -position;
+    }
+}
+
+const getNewPositions: (
+        refsArray: React.MutableRefObject<TRefsObject<HTMLDivElement>>, 
+        delta: number,
+        periodsLength: number
+    ) => number[] = (refsArray, delta, periodsLength) => {
+    const newPositions: number[] = [];
+    let currentPosition: number = 0;
+    refsArray.current.refElements.forEach((element) => {
+        currentPosition = element.position + delta;
+        if (currentPosition < 0) {
+            currentPosition += periodsLength;
+        }
+        currentPosition = Math.abs(currentPosition % periodsLength);
+        newPositions.push(currentPosition);
+    })
+    return newPositions;
+}
+
+const getDotCoordinates: (
+    dotsNumber: number, 
+    dotIndex: number, 
+    radius: number
+) => { x: number, y: number } = (dotsNumber, dotIndex, radius) => {
+    const position = dotIndex / dotsNumber;
+    const angle = position * 2 * Math.PI;
+    
+    const xCoordinate = radius + radius * Math.cos(angle);
+    const yCoordinate = radius + radius * Math.sin(angle);
+    
     return {
         x: xCoordinate,
         y: yCoordinate
     }
 }
 
-const getPercentageByDotIndex: (dotIndex: number, dotsLength: number) => number = (dotIndex, dotsLength) => (dotIndex/dotsLength) - 1 / 6;
-
-const getCircleRadius = () => 530 / 1440 * Math.min(1440, window.innerWidth) / 2;
-
-const getPositionByPeriodId: (clickPeriodId: string, periodId: string, refsArray: RefElement<HTMLDivElement>[], isStart: boolean) => number  = (clickPeriodId, periodId, refsArray, isStart) => {
-    let resultPosition = 0;
-    let clickPeriodPosition = 0;
-    refsArray.forEach((element: RefElement<HTMLDivElement>, index: number) => {
-        if (element.periodId === periodId)
-            resultPosition = element.position;
-    });
-    refsArray.forEach((element: RefElement<HTMLDivElement>, index: number) => {
-        if (element.periodId === clickPeriodId)
-            clickPeriodPosition = element.position;
-    })
-    return resultPosition - clickPeriodPosition;       
-}
-
 const Circle: React.FC = () => {
+    const viewPort = useViewport();
+    const centerX = getCenterX(viewPort);
+    const centerY = getCenterY(viewPort);
+    const circleRadius = getCircleRadius(viewPort);
+    const currentPeriod = useSelector(getCurrentPeriod)
     const container = useRef<HTMLDivElement>(null);
     const pathRef = useRef<SVGPathElement | null>(null);
     const refsArray = useRef<TRefsObject<HTMLDivElement>>({
         refElements: [],
         newPositions: []
     });
-    const [centerX, setCenterX] = useState(getCenterX());
-    const [centerY, setCenterY] = useState(getCenterY());
-    const [circleRadius, setCircleRadius] = useState(getCircleRadius());
-    const [width, setWidth] = useState(window.innerWidth);
+    
     const dispatch = useDispatch();
-    const handleDotClick = (el: RefElement<HTMLDivElement>) => () => {
+    const periods = useSelector(getPeriods)
+
+    const [animationVersion, setAnimationVersion] = useState(0);
+
+
+    const handleDotClick = useCallback((el: RefElement<HTMLDivElement>) => () => {
         if (!refsArray.current)
             return;
-        refsArray.current.refElements.forEach((element: RefElement<HTMLDivElement>, index: number, refElements: RefElement<HTMLDivElement>[]) => {
+        const delta: number = getDelta(el, refsArray.current.refElements.length);
+        const newPositions = getNewPositions(refsArray, delta, periods.length);
+        
+        refsArray.current.refElements.forEach((element: RefElement<HTMLDivElement>, index: number) => {
+            const isTargetPeriod = element.periodId === el.periodId;
+            
             gsap.to(element.element, {
                 duration: 1,
                 repeat: 0,
@@ -79,54 +115,52 @@ const Circle: React.FC = () => {
                     path: pathRef.current!,
                     align: pathRef.current!,
                     autoRotate: false,
-                    start: getPercentageByDotIndex(element.position, dots.length),
-                    end: getPercentageByDotIndex(getPositionByPeriodId(el.periodId, element.periodId, refsArray.current!.refElements, false), dots.length)
+                    start: getPercentageByDotIndex(element.position, periods.length),
+                    end: getPercentageByDotIndex(
+                        element.position + delta,
+                        periods.length
+                    )
                 },
                 onStart: () => {
-                    if (index === 0) 
-                        dispatch(periodChange({periodIndex: el.periodId}))
+                    if (isTargetPeriod) {
+                        dispatch(periodChange({periodId: el.periodId}))
+                    }
                 },
                 onComplete: () => {
-                    refsArray.current.newPositions.push((dots.length +  getPositionByPeriodId(el.periodId, element.periodId, refsArray.current!.refElements, false)) % dots.length);
-                    if (index === refElements.length - 1) {
-                        refsArray.current.refElements.forEach((element: RefElement<HTMLDivElement>, index: number) => {
-                            element.position = refsArray.current.newPositions[index];
-                        })
-                        refsArray.current.newPositions = [];
-                    }
-                   
+                    element.position = isTargetPeriod ? 0 : newPositions[index];
                 }
             });
         });
-    }
-    const currentPeriod = useSelector(getCurrentPeriod);
-    const dots = useSelector(getDots);
-    const setCircleRadiusHandler = () => {
-        setCircleRadius(getCircleRadius());
-        setCenterX(getCenterX());
-        setCenterY(getCenterY());
-        setWidth(window.innerWidth);
-    }
-    useEffect(()=>{
-        window.addEventListener('resize', setCircleRadiusHandler);
-        return () => {
-            window.removeEventListener('resize', setCircleRadiusHandler);
-        }
-    })
-    useGSAP((context, contextSafe) => {
-        if (!pathRef.current) return;
-        const element = refsArray.current?.refElements.filter((element) => Number(element.periodId) === currentPeriod)[0];
-        handleDotClick(element)();
-        refsArray.current?.refElements.forEach((el) => {
-            el.element.addEventListener('click', contextSafe!(handleDotClick(el)));
-            
+        }, [dispatch, periods.length])
+
+    
+    useGSAP((_, contextSafe) => {
+        if (!pathRef.current)
+            return;
+        const handlers = refsArray.current.refElements.map((el) => {
+            const handler = contextSafe!(handleDotClick(el));
+            el.element.addEventListener('click', handler);
+            return {
+                element: el.element,
+                handler,
+            }
         })
+
         return () => {
-            refsArray.current?.refElements.forEach((el, index) => {
-                el.element.removeEventListener('click', contextSafe!(handleDotClick(el)));
+            handlers.forEach(({element, handler}) => {
+                element.removeEventListener('click', handler);
             })
         }
-    },{ scope: container, dependencies: [currentPeriod]})
+    },{ scope: container, dependencies: [circleRadius, refsArray.current?.refElements.length]})
+
+    useEffect(() => {
+        if (!pathRef.current || !refsArray.current?.refElements.length)
+            return;
+        const element = refsArray.current.refElements.find((element) => element.periodId === currentPeriod)
+        if (element)
+            handleDotClick(element)();
+        return 
+    }, [currentPeriod, handleDotClick, circleRadius]);
 
     const addElementToRefs = (index: number, periodId: string) => (el: HTMLDivElement) => {
         if (el && !refsArray.current?.refElements.map((item) => item.periodId).includes(periodId))
@@ -138,14 +172,23 @@ const Circle: React.FC = () => {
     }
     return (
         <>
-            <div ref={container} style={{position: "absolute", top: `${centerY}px`, left: `${centerX}px`}}>
-                <SvgHorizontalLineUI x1={-width} y1={circleRadius} x2={width} y2={circleRadius}/>
-                <SvgVerticalLineUI x1={circleRadius} y1={-window.innerHeight} x2={circleRadius} y2={window.innerHeight}/>
+            <div ref={container} style={{position: "absolute", top: `${centerY}px`, left: `${centerX}px`, transform: 'none', transformOrigin: 'center'}}>
+                <SvgHorizontalLineUI x1={-viewPort.width} y1={circleRadius} x2={viewPort.width} y2={circleRadius}/>
+                <SvgVerticalLineUI x1={circleRadius} y1={-viewPort.height} x2={circleRadius} y2={viewPort.height}/>
                 <CircleUI ref={pathRef} radius={circleRadius} />
-                {dots.map((dot, index) => {
-                    const dotCoordinates = getDotCoordinates(dots.length, index, circleRadius, centerX, centerY);
-                    return <DotUI ref={addElementToRefs(index, dot.periodId)} key={index} text={dot.dotDescription} centerX={dotCoordinates.x} centerY={dotCoordinates.y} periodNumber={Number(dot.periodId)} isActive={Number(currentPeriod) === Number(dot.periodId)}/>
-                })}
+                {periods.map((period, index) => {
+                    const dotCoordinates = getDotCoordinates(periods.length, refsArray.current?.refElements[index]?.position ?? index, circleRadius)
+                    const distance = Math.sqrt(dotCoordinates.x ** 2 + dotCoordinates.y ** 2)
+                    return <DotUI 
+                        ref={addElementToRefs(index, period.periodId)} 
+                        key={index} 
+                        text={period.category} 
+                        dotCoordinates={dotCoordinates}
+                        period={period}
+                        isActive={Number(currentPeriod) === Number(period.periodId)}
+                    />
+                 }   
+                )}
             </div>
         </>
     )

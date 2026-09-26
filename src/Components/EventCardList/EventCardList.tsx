@@ -3,20 +3,22 @@ import EventCardUI from "../ui/EventCardUI/EventCardUI";
 import { getEventsList } from "../../../src/services/slices/periodsSlice";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Swiper as SwiperType } from 'swiper';
-import { Navigation, Pagination } from 'swiper/modules';
+import { Navigation } from 'swiper/modules';
 import styles from './EventCardList.module.scss';
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { forwardRef, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
+import type { Event } from "../../services/api/getEvents";
 
 interface EventCardListProps {
     isMobile: boolean;
+    eventsList: Event[];
 }
 
-const EventCardList = forwardRef<HTMLDivElement, EventCardListProps>(({isMobile}, ref) => {
-    const eventsList = useSelector(getEventsList);
+const EventCardList = forwardRef<HTMLDivElement, EventCardListProps>(({isMobile, eventsList}, ref) => {
+    console.log(`eventsList ${eventsList}`);
     const [leftButtonVisible, setLeftButtonVisible] = useState(false);
     const [rightButtonVisible, setRightButtonVisible] = useState(true);
     const swiperRef = useRef<SwiperType>();
@@ -73,7 +75,7 @@ const EventCardList = forwardRef<HTMLDivElement, EventCardListProps>(({isMobile}
                 className={styles.swiperContainer}
             >
                 {eventsList.map((event, index) => (
-                    <SwiperSlide key={index}>
+                    <SwiperSlide key={event.id}>
                         <EventCardUI year={event.year} description={event.description} />
                     </SwiperSlide>)
                 )}
