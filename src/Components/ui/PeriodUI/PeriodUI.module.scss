@@ -9,10 +9,10 @@
 }
 
 .year {
-    font-family: PT Sans;
+    font-family: "PT Sans",system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Open Sans","Helvetica Neue",sans-serif;
     font-weight: 700;
-    font-size: clamp(3.5rem, 0.9286rem + 12.8571vw, 12.5rem);
-    line-height: clamp(3.5rem, 1.6429rem + 9.2857vw, 10rem);
+    font-size: clamp(2.5rem, 0.9286rem + 12.8571vw, 10.5rem);
+    line-height: clamp(2.5rem, 1.6429rem + 9.2857vw, 9rem);
     letter-spacing: -2%;
     text-align: center;
 }

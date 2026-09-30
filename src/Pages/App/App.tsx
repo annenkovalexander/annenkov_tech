@@ -34,7 +34,7 @@ const EventCardList = lazy(
 gsap.registerPlugin(useGSAP);
 
 const MOBILE_BREAKPOINT =
-  Number(process.env.MOBILE_BREAKPOINT) || 720;
+  Number(process.env.MOBILE_BREAKPOINT) || 800;
 
 const App = () => {
   const [isMobile, setIsMobile] = useState(
