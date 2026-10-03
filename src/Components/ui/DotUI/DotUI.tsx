@@ -25,7 +25,7 @@ const DotUI = forwardRef<HTMLDivElement, DotUIProps>(({text, isActive, dotCoordi
     const circleDiameter = circleRadius * 2;
 
     return (
-        <div ref={ref} className={styles.container} style={{position: "absolute", top: `${dotCoordinates.y}px`, left: `${dotCoordinates.x}px`, width: "10px", height: "10px", transform: 'none'}}>
+        <div ref={ref} className={styles.container} style={{position: "absolute", top: `${dotCoordinates.y}px`, left: `${dotCoordinates.x}px`, width: "10px", height: "10px", transform: 'translate(-50%, -50%)' }}>
             <div className={styles.dotContainer}>
                 <svg width={dotRadius * 2} height={dotRadius * 2} viewBox={`0 0 ${dotDiameter} ${dotDiameter}`}>
                     <circle

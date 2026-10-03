@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 
 export type Viewport = {
     width: number,
@@ -12,17 +12,45 @@ const getViewport: () => Viewport = () => (
     }
 )
 
-export const useViewport: () => Viewport = () => {
-    const [viewPort, setViewPort] = useState<Viewport>(getViewport)
-    useEffect(() => {
-        const handleResize = () => {
-            setViewPort({
-                width: window.innerWidth,
-                height: window.innerHeight
-            })
-        }
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    })
-    return viewPort;
+export function useViewport() {
+  const [viewport, setViewport] = useState<Viewport>({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1440,
+    height: typeof window !== 'undefined' ? window.innerHeight : 900,
+  });
+
+  const lastWidthRef = useRef(viewport.width);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const newWidth = window.innerWidth;
+      const newHeight = window.innerHeight;
+      
+      // Обновляем только если изменилась ширина
+      // Игнорируем изменения высоты на мобильных
+      if (newWidth === lastWidthRef.current) {
+        return;
+      }
+      
+      lastWidthRef.current = newWidth;
+      setViewport({ width: newWidth, height: newHeight });
+    };
+
+    // Используем visualViewport для более стабильных значений
+    const visualViewport = window.visualViewport;
+    if (visualViewport) {
+      visualViewport.addEventListener('resize', handleResize);
+    } else {
+      window.addEventListener('resize', handleResize);
+    }
+    
+    return () => {
+      if (visualViewport) {
+        visualViewport.removeEventListener('resize', handleResize);
+      } else {
+        window.removeEventListener('resize', handleResize);
+      }
+    };
+  }, []);
+
+  return viewport;
 }

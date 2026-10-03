@@ -114,6 +114,7 @@ const Circle: React.FC = () => {
                 motionPath: {
                     path: pathRef.current!,
                     align: pathRef.current!,
+                    alignOrigin: [0.5, 0.5],
                     autoRotate: false,
                     start: getPercentageByDotIndex(element.position, periods.length),
                     end: getPercentageByDotIndex(

@@ -34,7 +34,7 @@ const EventCardList = lazy(
 gsap.registerPlugin(useGSAP);
 
 const MOBILE_BREAKPOINT =
-  Number(process.env.MOBILE_BREAKPOINT) || 800;
+  Number(process.env.MOBILE_BREAKPOINT) || 720;
 
 const App = () => {
   const [isMobile, setIsMobile] = useState(
@@ -146,9 +146,7 @@ const App = () => {
         {!isMobile && eventsList.length > 0 && (<PeriodControls isMobile={isMobile} />)}
         <Suspense
           fallback={
-            <div className={styles.loader}>
-              Загрузка событий...
-            </div>
+            <div className={styles.loader} />
           }
         >
           <EventCardList
