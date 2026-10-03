@@ -5,7 +5,7 @@ const HeaderUI = ({ fullName, role, description }: HeaderData) => (
         <header className={styles.header}>
             <div className={styles.content}>
                 <h1 className={styles.title}>
-                    <a href="https://t.me/alexander_app" aria-label="Открыть Telegram Александра Анненкова">
+                    <a href="https://t.me/alexander_aap" aria-label="Открыть Telegram Александра Анненкова">
                         {fullName}
                     </a>
                 </h1>

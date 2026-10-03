@@ -77,15 +77,12 @@
     max-width: clamp(22rem, 45vw, 42rem);
     margin: 0;
 
-    font-family:
-        'PT Sans',
-        system-ui,
-        sans-serif;
-
+    font-family: 'PT Sans', Arial, Helvetica, sans-serif;
     font-weight: 400;
-    font-size: clamp(1rem, 0.9286rem + 0.3571vw, 1.25rem);
-    line-height: 1.4;
-    color: #333;
+    font-size: clamp(0.875rem, 0.7679rem + 0.5357vw, 1.25rem);;
+    line-height: 30px;
+    letter-spacing: 0%;
+    color: #42567a;
     text-wrap: pretty;
     cursor: default;
 }

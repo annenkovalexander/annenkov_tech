@@ -4,15 +4,15 @@
     align-self: center;
     justify-self: center;
     margin-top: clamp(3.5rem, 2.7857rem + 3.5714vw, 6rem);
-    width: clamp(17.0625rem, 4.5625rem + 62.5vw, 60.8125rem);
+    width: 90%;
     z-index: 1;
 }
 
 .year {
-    font-family: PT Sans;
+    font-family: "PT Sans",system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Open Sans","Helvetica Neue",sans-serif;
     font-weight: 700;
-    font-size: clamp(3.5rem, 0.9286rem + 12.8571vw, 12.5rem);
-    line-height: clamp(3.5rem, 1.6429rem + 9.2857vw, 10rem);
+    font-size: clamp(2.5rem, 0.9286rem + 12.8571vw, 10.5rem);
+    line-height: clamp(2.5rem, 1.6429rem + 9.2857vw, 9rem);
     letter-spacing: -2%;
     text-align: center;
 }

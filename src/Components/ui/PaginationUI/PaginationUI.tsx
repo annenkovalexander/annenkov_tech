@@ -11,7 +11,7 @@ interface PaginationUIProps {
 
 const PaginationUI: React.FC<PaginationUIProps> = ({periods, periodNumber, handleDotClicks}) => 
      (
-        <div>
+        <div className={styles.container}>
             {periods.map((_, index) => (
                 <div key={index} className={clsx([styles.r, periodNumber - 1 === index ? styles.activeBullet : ''])} onClick={handleDotClicks[index]}/>
             ))}

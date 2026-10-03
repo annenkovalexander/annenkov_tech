@@ -146,9 +146,7 @@ const App = () => {
         {!isMobile && eventsList.length > 0 && (<PeriodControls isMobile={isMobile} />)}
         <Suspense
           fallback={
-            <div className={styles.loader}>
-              Загрузка событий...
-            </div>
+            <div className={styles.loader} />
           }
         >
           <EventCardList
