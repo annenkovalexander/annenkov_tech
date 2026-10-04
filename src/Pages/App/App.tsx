@@ -11,7 +11,6 @@ import { useGSAP } from "@gsap/react";
 
 import PeriodControls from "../../Components/PeriodControls/PeriodControls";
 import Period from "../../Components/Period/Period";
-import Title from "../../Components/Title/Title";
 import MobileCenterLineUI from "../../Components/ui/MobileCenterLineUI/MobileCenterLineUI";
 import Circle from "../../Components/Circle/Circle";
 import PeriodTitle from "../../Components/PeriodTitle/PeriodTitle";
@@ -20,9 +19,7 @@ import styles from "./App.module.scss";
 
 import { useSelector } from "../../services/store";
 import { getCurrentPeriod, getCurrentPeriodData, getEventsList, setData } from "../../services/slices/periodsSlice";
-import { fetchData, getEvents } from "../../services/api/getEvents";
-import type { Event } from "../../services/api/getEvents";
-import periods from "../../services/mock.json"
+import { fetchData } from "../../services/api/getEvents";
 import { useDispatch } from "../../services/store";
 import Header from "../../Components/Header/Header";
 
@@ -45,10 +42,7 @@ const App = () => {
   const periodTitleRef = useRef<HTMLDivElement | null>(null);
   const mobileLineRef = useRef<HTMLDivElement | null>(null);
   const eventsCardsListRef = useRef<HTMLDivElement | null>(null);
-  const periodsData = useSelector(getCurrentPeriodData)
   const eventsList = useSelector(getEventsList);
-  const [error, setError] = useState<string>('');
-  const [status, setStatus] = useState<string>('Загрузка данных ...')
   const currentPeriod = useSelector(getCurrentPeriod);
 
   
@@ -56,7 +50,6 @@ const App = () => {
     fetchData(1500).then((response) => response.json()).then(
       periods => {
         dispatch(setData(periods))
-        setStatus('')
       })
   }, []);
 

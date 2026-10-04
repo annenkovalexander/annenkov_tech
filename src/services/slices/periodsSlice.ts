@@ -1,51 +1,26 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { getPeriodIndexById, getPeriodById } from './utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { Period } from '../api/getEvents';
+import type { AppState } from './utils';
 
-export const initialState = {
+const initialState: AppState = {
     pageTitle: 'Основные события',
     currentPeriod: "",
     periods: []
 };
 
-
-type AppState = {
-    pageTitle: string,
-    currentPeriod: string,
-    periods: Period[],
-}
-
-type PeriodId = {
-    periodId: string
-}
-
-type PeriodsData = Period[];
-
-const getPeriodById: (state: AppState) => AppState['periods'][number] | undefined = (state) => {
-    if (!Array.isArray(state.periods)) {
-        return undefined;
-    }
-    return state.periods.find((period) => period.periodId === state.currentPeriod);
-}
-
-const getPeriodIndexById: (state: AppState) => number = (state) => {
-    if(!Array.isArray(state.periods)) {
-        return -1;
-    }
-    return state.periods.findIndex((period) => period.periodId === state.currentPeriod);
-}
-
 const periodSlice = createSlice({
     name: 'periods',
     initialState,
     reducers: {
-        setData: (state: AppState, action: PayloadAction<PeriodsData>) => {
+        setData: (state: AppState, action: PayloadAction<Period[]>) => {
             state.periods = action.payload;
             if (state.currentPeriod === "" && action.payload.length > 0) {
                 state.currentPeriod = state.periods[0].periodId
             }
         },
-        periodChange: (state: AppState, action: PayloadAction<PeriodId>) => {
+        periodChange: (state: AppState, action: PayloadAction<{periodId: string}>) => {
             state.currentPeriod = action.payload.periodId;
         },
         incrementPeriod: (state: AppState) => {

@@ -1,8 +1,7 @@
 import type { SyntheticEvent } from "react"
 import PeriodControlsUI from "../ui/PeriodControlsUI/PeriodControlsUI";
 import { useDispatch, useSelector } from "../../../src/services/store";
-import { decrementPeriod, getCurrentPeriod, getPeriods, incrementPeriod, getPeriodNumber } from "../../../src/services/slices/periodsSlice";
-import PaginationUI from "../ui/PaginationUI/PaginationUI";
+import { decrementPeriod, getPeriods, incrementPeriod, getPeriodNumber } from "../../../src/services/slices/periodsSlice";
 import Pagination from "../Pagination/Pagination";
 import styles from './PeriodControls.module.scss';
 

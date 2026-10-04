@@ -1,4 +1,4 @@
-export type periodType = {
+export type PeriodType = {
     "category": string,
     "periodId": string,
     "year1": number,

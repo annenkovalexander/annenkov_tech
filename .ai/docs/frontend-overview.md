@@ -8,6 +8,7 @@
 | :--- | :------------ |
 | `Circle.tsx` | `components/Circle/Circle.tsx` |
 | `EventCardList.tsx` | `components/EventCardList/EventCardList.tsx` |
+| `Header.tsx` | `components/Header/Header.tsx` |
 | `Pagination.tsx` | `components/Pagination/Pagination.tsx` |
 | `Period.tsx` | `components/Period/Period.tsx` |
 | `PeriodControls.tsx` | `components/PeriodControls/PeriodControls.tsx` |
@@ -16,6 +17,7 @@
 | `CircleUI.tsx` | `components/ui/CircleUI/CircleUI.tsx` |
 | `DotUI.tsx` | `components/ui/DotUI/DotUI.tsx` |
 | `EventCardUI.tsx` | `components/ui/EventCardUI/EventCardUI.tsx` |
+| `HeaderUI.tsx` | `components/ui/HeaderUI/HeaderUI.tsx` |
 | `MobileCenterLineUI.tsx` | `components/ui/MobileCenterLineUI/MobileCenterLineUI.tsx` |
 | `PaginationUI.tsx` | `components/ui/PaginationUI/PaginationUI.tsx` |
 | `PeriodControlsUI.tsx` | `components/ui/PeriodControlsUI/PeriodControlsUI.tsx` |
@@ -35,6 +37,9 @@
 
 | File | Relative path |
 | :--- | :------------ |
+| `getEvents.ts` | `services/api/getEvents.ts` |
+| `useViewport.ts` | `services/hooks/useViewport.ts` |
+| `headerSlice.ts` | `services/slices/headerSlice.ts` |
 | `periodsSlice.ts` | `services/slices/periodsSlice.ts` |
 | `store.ts` | `services/store.ts` |
 | `types.ts` | `services/types.ts` |

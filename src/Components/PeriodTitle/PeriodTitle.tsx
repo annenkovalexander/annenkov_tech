@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import { forwardRef } from "react";
 import { getPeriodTitle } from "../../../src/services/slices/periodsSlice"
 import { useSelector } from "../../../src/services/store"
 import PeriodTitleUI from "../ui/PeriodTitleUI/PeriodTitleUI";

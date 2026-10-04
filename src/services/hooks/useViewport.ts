@@ -1,21 +1,12 @@
 import { useEffect, useState, useRef } from "react"
 
 export type Viewport = {
-    width: number,
-    height: number
+    width: number
 }
-
-const getViewport: () => Viewport = () => (
-    {
-        width: typeof window === "undefined" ? 1440 : window.innerWidth,
-        height: typeof window === "undefined" ? 900 : window.innerHeight
-    }
-)
 
 export function useViewport() {
   const [viewport, setViewport] = useState<Viewport>({
-    width: typeof window !== 'undefined' ? window.innerWidth : 1440,
-    height: typeof window !== 'undefined' ? window.innerHeight : 900,
+    width: typeof window !== 'undefined' ? window.innerWidth : 1440
   });
 
   const lastWidthRef = useRef(viewport.width);
@@ -23,7 +14,6 @@ export function useViewport() {
   useEffect(() => {
     const handleResize = () => {
       const newWidth = window.innerWidth;
-      const newHeight = window.innerHeight;
       
       // Обновляем только если изменилась ширина
       // Игнорируем изменения высоты на мобильных
@@ -32,7 +22,7 @@ export function useViewport() {
       }
       
       lastWidthRef.current = newWidth;
-      setViewport({ width: newWidth, height: newHeight });
+      setViewport({ width: newWidth });
     };
 
     // Используем visualViewport для более стабильных значений

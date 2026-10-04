@@ -4,6 +4,16 @@
 
 ## Slices
 
+### Slice `header`
+
+Файл: `services/slices/headerSlice.ts`
+
+| State field |
+| :---------- |
+| `fullName` |
+| `role` |
+| `description` |
+
 ### Slice `periods`
 
 Файл: `services/slices/periodsSlice.ts`

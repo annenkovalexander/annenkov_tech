@@ -3,35 +3,23 @@ import PeriodUI from "../ui/PeriodUI/PeriodUI";
 import { useSelector } from "../../../src/services/store";
 import { getCurrentPeriodData } from "../../../src/services/slices/periodsSlice";
 import styles from './Period.module.scss';
+import { getYearList } from "./utils";
 
-
-type TYearOld = {
-    year1Old: number;
-    year2Old: number;
-}
-
-const getYearList: (year: number, yearOld: number) => number[] = (year, yearOld) => {
-    let resultList = [];
-    let step = 1;
-    if (year < yearOld) {
-        step = -1;
-    }
-    resultList = Array.from({length: (year - yearOld) / step + 1}, (_, i) => yearOld + i * step);
-    return resultList;
-}
 
 const Period: React.FC = () => {
     const yearsData = useSelector(getCurrentPeriodData);
-    const year1Old = useRef<number>();
-    const year2Old = useRef<number>();
+    const yearStartOld = useRef<number>(new Date().getFullYear());
+    const yearEndOld = useRef<number>(new Date().getFullYear());
     useEffect(() => {
-        year1Old.current = yearsData?.startYear! ?? 2026;
-        year2Old.current = yearsData?.endYear! ?? 2026;
+        yearStartOld.current = yearsData?.startYear ?? new Date().getFullYear();
+        yearEndOld.current = yearsData?.endYear ?? new Date().getFullYear();
     }, [yearsData]);
-    if (yearsData) {
+    if (yearsData?.startYear && yearsData?.endYear) {
+        const yearsListStartYear = getYearList(yearsData.startYear, yearStartOld.current)
+        const yearsListEndYear = getYearList(yearsData.endYear, yearEndOld.current)
         return (
             <>
-                <PeriodUI year1List={yearsData && year1Old.current ? getYearList(yearsData!.startYear!, year1Old.current) : getYearList(yearsData!.startYear!, yearsData!.startYear!)} year2List={year2Old.current ? getYearList(yearsData!.endYear!, year2Old.current) : getYearList(yearsData!.endYear!, yearsData!.endYear!)} />
+                <PeriodUI yearsListStartYear={yearsListStartYear} yearsListEndYear={yearsListEndYear} />
             </>
         )
     }

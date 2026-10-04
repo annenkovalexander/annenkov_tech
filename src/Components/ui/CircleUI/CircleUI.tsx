@@ -1,5 +1,5 @@
 import { useImperativeHandle } from "react";
-import { forwardRef, useEffect, useRef } from "react";
+import { forwardRef, useRef } from "react";
 import styles from './CircleUI.module.scss';
 
 interface TCircleUIProps {

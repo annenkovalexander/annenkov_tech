@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { memo } from 'react';
 import styles from './PaginationUI.module.scss';
 import type { Period } from '../../../services/api/getEvents';
 
@@ -18,4 +19,4 @@ const PaginationUI: React.FC<PaginationUIProps> = ({periods, periodNumber, handl
         </div>
     )
 
-export default PaginationUI;
+export default memo(PaginationUI);
