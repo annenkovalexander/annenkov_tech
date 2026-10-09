@@ -7,9 +7,10 @@ import { SvgHorizontalLineUI, SvgVerticalLineUI } from "../ui/SVGLineUI/SVGLineU
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
-import { getCenterY, getCircleRadius, getDelta, getNewPositions, getPercentageByDotIndex, getDotCoordinates } from "./utils";
+import { getCenterY, getCircleRadius, getDelta, getNewPositions, getPercentageByDotIndex, getDotCoordinates, DOT_CONFIG } from "./utils";
 import type { RefElement, TRefsObject } from "./utils";
 import { useViewport } from "../../services/hooks/useViewport";
+import type { UUID } from "crypto";
 
 
 gsap.registerPlugin(useGSAP);
@@ -43,7 +44,7 @@ const Circle: React.FC = () => {
 
     const displayCenterY = stableCenterY ?? centerY;
 
-    const handleDotClick = useCallback((periodId: string, position: number) => () => {
+    const handleDotClick = useCallback((id: UUID, position: number) => () => {
         if (!refsArray.current || !pathRef.current)
             return;
             
@@ -51,7 +52,7 @@ const Circle: React.FC = () => {
         
         // Найти элемент по periodId
         const el = refsArray.current.refElements.find(
-            (element) => element.periodId === periodId
+            (element) => element.periodId === id
         );
         
         if (!el) return;
@@ -60,7 +61,7 @@ const Circle: React.FC = () => {
         const newPositions = getNewPositions(refsArray, delta, periods.length);
         
         refsArray.current.refElements.forEach((element: RefElement<HTMLDivElement>, index: number) => {
-            const isTargetPeriod = element.periodId === periodId;
+            const isTargetPeriod = element.periodId === id;
             
             gsap.killTweensOf(element.element);
             
@@ -81,7 +82,7 @@ const Circle: React.FC = () => {
                 },
                 onStart: () => {
                     if (isTargetPeriod) {
-                        dispatch(periodChange({ periodId }));
+                        dispatch(periodChange({ id }));
                     }
                 },
                 onComplete: () => {
@@ -104,7 +105,7 @@ const Circle: React.FC = () => {
             handleDotClick(element.periodId, element.position)();
     }, [currentPeriod, handleDotClick, circleRadius]);
 
-    const addElementToRefs = (index: number, periodId: string) => (el: HTMLDivElement) => {
+    const addElementToRefs = (index: number, periodId: UUID) => (el: HTMLDivElement) => {
         if (el && !refsArray.current?.refElements.map((item) => item.periodId).includes(periodId)) {
             refsArray.current?.refElements.push({
                 element: el,
@@ -135,7 +136,6 @@ const Circle: React.FC = () => {
                 <SvgVerticalLineUI 
                     x1={circleRadius} 
                     y1={-viewPort.width} 
-                    x2={circleRadius} 
                     y2={viewPort.width}
                 />
                 <CircleUI ref={pathRef} radius={circleRadius} />
@@ -148,13 +148,18 @@ const Circle: React.FC = () => {
                     
                     return (
                         <DotUI 
-                            ref={addElementToRefs(index, period.periodId)} 
-                            key={period.periodId} 
+                            ref={addElementToRefs(index, period.id)} 
+                            key={period.id} 
                             text={period.category} 
                             dotCoordinates={dotCoordinates}
+                            dotRadius={DOT_CONFIG.DOT_RADIUS}
+                            dotDiameter={DOT_CONFIG.DOT_RADIUS * 2}
+                            circleRadius={DOT_CONFIG.CIRCLE_RADIUS}
+                            circleDiameter={DOT_CONFIG.CIRCLE_RADIUS * 2}
+                            strokeWidth={DOT_CONFIG.STROKE_WIDTH}
                             period={period}
-                            isActive={currentPeriod === period.periodId}
-                            onClick={handleDotClick(period.periodId, index)}
+                            isActive={currentPeriod === period.id}
+                            onClick={handleDotClick(period.id, index)}
                         />
                     );
                 })}

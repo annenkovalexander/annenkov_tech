@@ -1,22 +1,38 @@
 import clsx from 'clsx';
-import { memo } from 'react';
+import { memo, type MouseEventHandler } from 'react';
 import styles from './PaginationUI.module.scss';
-import type { Period } from '../../../services/api/getEvents';
 
+type PaginationItem = {
+    id: string;
+};
 
 interface PaginationUIProps {
-    periods: Period[];
-    periodNumber: number;
-    handleDotClicks: React.MouseEventHandler<HTMLDivElement>[];
+    paginationItems: PaginationItem[];
+    activePeriodIndex: number;
+    onPeriodClick: MouseEventHandler<HTMLButtonElement>;
 }
 
-const PaginationUI: React.FC<PaginationUIProps> = ({periods, periodNumber, handleDotClicks}) => 
-     (
-        <div className={styles.container}>
-            {periods.map((_, index) => (
-                <div key={index} className={clsx([styles.r, periodNumber - 1 === index ? styles.activeBullet : ''])} onClick={handleDotClicks[index]}/>
-            ))}
-        </div>
-    )
+const PaginationUI: React.FC<PaginationUIProps> = ({
+    paginationItems,
+    activePeriodIndex,
+    onPeriodClick,
+}) => (
+    <div className={styles.container}>
+        {paginationItems.map((paginationItem, index) => (
+            <button
+                key={paginationItem.id}
+                type="button"
+                data-period-id={paginationItem.id}
+                className={clsx(
+                    styles.r,
+                    activePeriodIndex === index && styles.activeBullet,
+                )}
+                onClick={onPeriodClick}
+                aria-label={`Выбрать период ${index + 1}`}
+                aria-current={activePeriodIndex === index ? 'true' : undefined}
+            />
+        ))}
+    </div>
+);
 
 export default memo(PaginationUI);

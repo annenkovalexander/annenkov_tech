@@ -1,16 +1,11 @@
-import type { Period } from '../api/getEvents';
+import type { AppState } from '../slices/periodsSlice';
 
-export type AppState = {
-    pageTitle: string,
-    currentPeriod: string,
-    periods: Period[],
-}
-
-export const getPeriodById: (state: AppState) => AppState['periods'][number] | undefined = (state) => state.periods.find((period) => period.periodId === state.currentPeriod);
+export const getPeriodById: (state: AppState) => AppState['periods'][number] | undefined = (state) => 
+    state.periods.find((period) => period.id === state.currentPeriodId);
 
 export const getPeriodIndexById: (state: AppState) => number = (state) => {
     if(!Array.isArray(state.periods)) {
         return -1;
     }
-    return state.periods.findIndex((period) => period.periodId === state.currentPeriod);
+    return state.periods.findIndex((period) => period.id === state.currentPeriodId);
 }

@@ -1,3 +1,4 @@
+import type { UUID } from "crypto";
 import type { Viewport } from "../../services/hooks/useViewport";
 
 
@@ -9,10 +10,16 @@ const VIEWPORT_CONFIG = {
     DELTA_COEFFICIENT_Y: 50
 }
 
+export const DOT_CONFIG = {
+    DOT_RADIUS: 3.5, 
+    CIRCLE_RADIUS: 28,
+    STROKE_WIDTH: 1
+}
+
 
 export type RefElement<T = HTMLElement> = {
     element: T,
-    periodId: string,
+    periodId: UUID,
     position: number
 }
 

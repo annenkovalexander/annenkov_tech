@@ -4,14 +4,18 @@ export type Viewport = {
     width: number
 }
 
+const parsedDefaultWidth = Number(process.env.DEFAULT_DESKTOP_WIDTH);
+const DEFAULT_DESKTOP_WIDTH = !Number.isNaN(parsedDefaultWidth) && Number.isFinite(parsedDefaultWidth) ? parsedDefaultWidth : 1440;
+
 export function useViewport() {
   const [viewport, setViewport] = useState<Viewport>({
-    width: typeof window !== 'undefined' ? window.innerWidth : 1440
+    width: DEFAULT_DESKTOP_WIDTH
   });
-
-  const lastWidthRef = useRef(viewport.width);
+  console.log(`DEFAULT_DESKTOP_WIDTH ${DEFAULT_DESKTOP_WIDTH}`)
+  const lastWidthRef = useRef(DEFAULT_DESKTOP_WIDTH);
 
   useEffect(() => {
+    
     const handleResize = () => {
       const newWidth = window.innerWidth;
       
@@ -24,6 +28,8 @@ export function useViewport() {
       lastWidthRef.current = newWidth;
       setViewport({ width: newWidth });
     };
+
+    handleResize();
 
     // Используем visualViewport для более стабильных значений
     const visualViewport = window.visualViewport;

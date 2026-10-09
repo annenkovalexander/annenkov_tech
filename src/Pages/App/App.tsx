@@ -18,10 +18,10 @@ import PeriodTitle from "../../Components/PeriodTitle/PeriodTitle";
 import styles from "./App.module.scss";
 
 import { useSelector } from "../../services/store";
-import { getCurrentPeriod, getCurrentPeriodData, getEventsList, setData } from "../../services/slices/periodsSlice";
-import { fetchData } from "../../services/api/getEvents";
+import { getCurrentPeriod, getEventsList, getPeriods, getLoadingStatus, getError } from "../../services/slices/periodsSlice";
 import { useDispatch } from "../../services/store";
 import Header from "../../Components/Header/Header";
+import { loadPeriods } from "../../services/thunks/periodThunk";
 
 const EventCardList = lazy(
   () =>
@@ -30,8 +30,17 @@ const EventCardList = lazy(
 
 gsap.registerPlugin(useGSAP);
 
+const parsedMobileBreakpoint = Number(process.env.MOBILE_BREAKPOINT);
 const MOBILE_BREAKPOINT =
-  Number(process.env.MOBILE_BREAKPOINT) || 720;
+    Number.isFinite(parsedMobileBreakpoint) && parsedMobileBreakpoint > 0
+        ? parsedMobileBreakpoint
+        : 720;
+
+const parsedTimeout = Number(process.env.INITIAL_DELAY);
+const INITIAL_DELAY =
+    Number.isFinite(parsedTimeout) && parsedTimeout > 0
+        ? parsedTimeout
+        : 1500;
 
 const App = () => {
   const [isMobile, setIsMobile] = useState(
@@ -44,14 +53,14 @@ const App = () => {
   const eventsCardsListRef = useRef<HTMLDivElement | null>(null);
   const eventsList = useSelector(getEventsList);
   const currentPeriod = useSelector(getCurrentPeriod);
+  const periods = useSelector(getPeriods);
+  const loadingStatus = useSelector(getLoadingStatus);
+  const error = useSelector(getError);
 
   
   useEffect(() => {
-    fetchData(1500).then((response) => response.json()).then(
-      periods => {
-        dispatch(setData(periods))
-      })
-  }, []);
+    dispatch(loadPeriods(INITIAL_DELAY));
+  }, [dispatch]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -92,9 +101,9 @@ const App = () => {
         );
       }
 
-      if (eventsCardsListRef .current) {
+      if (eventsCardsListRef.current) {
         gsap.fromTo(
-          eventsCardsListRef .current,
+          eventsCardsListRef.current,
           { opacity: 0, y: 10 },
           {
             duration: 1,
@@ -117,7 +126,7 @@ const App = () => {
     >
       {!isMobile && <Circle />}
       <Header />
-      <Period />
+      <Period loadingStatus={loadingStatus}/>
 
       {isMobile && (
         <PeriodTitle ref={periodTitleRef} />
@@ -136,7 +145,7 @@ const App = () => {
             : styles.sliderLayoutDesktop
         )}
       >
-        {!isMobile && eventsList.length > 0 && (<PeriodControls isMobile={isMobile} />)}
+        {!error && !isMobile && eventsList.length > 0 && (<PeriodControls isMobile={isMobile} periods={periods}/>)}
         <Suspense
           fallback={
             <div className={styles.loader} />
@@ -148,7 +157,7 @@ const App = () => {
             eventsList={eventsList}
           />
         </Suspense>
-        {isMobile && eventsList.length > 0 && (<PeriodControls isMobile={isMobile} />)}
+        {!error && isMobile && eventsList.length > 0 && (<PeriodControls isMobile={isMobile} periods={periods}/>)}
       </div>
       
     </div>

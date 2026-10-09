@@ -10,6 +10,11 @@ interface DotUIProps {
         x: number;
         y: number;
     };
+    dotRadius: number;
+    dotDiameter: number;
+    circleRadius: number;
+    circleDiameter: number;
+    strokeWidth: number;
     period: Period;
     onClick?: () => void;
 }
@@ -19,28 +24,22 @@ const DotUI = forwardRef<HTMLDivElement, DotUIProps>(({
     isActive, 
     dotCoordinates, 
     period,
+    dotRadius,
+    dotDiameter,
+    circleRadius,
+    circleDiameter,
+    strokeWidth,
     onClick
-}, ref) => {
-    const dotRadius = 3.5;
-    const dotDiameter = dotRadius * 2;
-    const circleRadius = 28;
-    const circleDiameter = circleRadius * 2;
-
-    return (
+}, ref) => (
         <div 
-            ref={ref} 
+            ref={ref}
             className={styles.container} 
             onClick={onClick}
             style={{
-                position: "absolute", 
-                top: `${dotCoordinates.y}px`, 
-                left: `${dotCoordinates.x}px`, 
-                width: "10px", 
-                height: "10px", 
-                transform: 'translate(-50%, -50%)',
-                cursor: 'pointer',
-                zIndex: 9999
-            }}
+                position: 'absolute',
+                '--dot-top': `${dotCoordinates.x}px`, 
+                '--dot-left': `${dotCoordinates.x}px`, 
+            } as React.CSSProperties}
         >
             <div className={styles.dotContainer}>
                 <svg width={dotRadius * 2} height={dotRadius * 2} viewBox={`0 0 ${dotDiameter} ${dotDiameter}`}>
@@ -48,9 +47,7 @@ const DotUI = forwardRef<HTMLDivElement, DotUIProps>(({
                         cx={dotRadius}
                         cy={dotRadius}
                         r={dotRadius - (1 / 2)}
-                        fill={"#42567a"}
-                        stroke={"#42567a"}
-                        strokeWidth={1}
+                        strokeWidth={strokeWidth}
                     />
                 </svg>
             </div>
@@ -60,16 +57,14 @@ const DotUI = forwardRef<HTMLDivElement, DotUIProps>(({
                         cx={circleRadius}
                         cy={circleRadius}
                         r={circleRadius - (1 / 2)}
-                        fill={"white"}
-                        stroke={"#42567a"}
-                        strokeWidth={1}
+                        strokeWidth={strokeWidth}
                     />
                 </svg>
-                <p className={styles.periodNumber}>{period.periodId}</p>
+                <p className={styles.periodNumber}>{period.periodText}</p>
                 <p className={styles.periodText}>{text}</p>
             </div>
         </div>
-    );
-});
+        
+    ));
 
 export default DotUI;

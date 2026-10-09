@@ -7,7 +7,7 @@ interface TEventCardProps {
 
 const EventCardUI: React.FC<TEventCardProps> = ({year, description}) => (
         <div className={styles.container}>
-            <h2 className={styles.year}>{year}</h2>
+            <div className={styles.year}>{year}</div>
             <p className={styles.description}>{description}</p>
         </div>
     )
