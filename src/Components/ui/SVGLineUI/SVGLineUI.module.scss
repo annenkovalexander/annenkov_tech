@@ -1,0 +1,22 @@
+.container {
+    --line-color: #42567a;
+    --line-top: -12px;
+    --line-left: 0;
+    --line-width: 1px;
+    position: absolute;
+    top: var(--line-top, 0);
+    left: var(--line-left, 0);
+}
+
+.svg {
+    overflow: visible;
+    margin: auto;
+    height: 2px;
+    width: 100%;
+}
+
+.line {
+    stroke: var(--line-color, #ccc);
+    stroke-width: var(--line-width, 1px);
+    stroke-opacity: .1;
+}

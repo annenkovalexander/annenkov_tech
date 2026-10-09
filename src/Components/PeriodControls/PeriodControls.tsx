@@ -1,43 +1,45 @@
-import type { SyntheticEvent } from "react"
+import { useMemo, type SyntheticEvent } from "react"
 import PeriodControlsUI from "../ui/PeriodControlsUI/PeriodControlsUI";
 import { useDispatch, useSelector } from "../../../src/services/store";
-import { decrementPeriod, getCurrentPeriod, getPeriods, incrementPeriod, getPeriodNumber } from "../../../src/services/slices/periodsSlice";
-import PaginationUI from "../ui/PaginationUI/PaginationUI";
+import { decrementPeriod, incrementPeriod, getCurrentPeriod } from "../../../src/services/slices/periodsSlice";
 import Pagination from "../Pagination/Pagination";
 import styles from './PeriodControls.module.scss';
+import { findPeriodIndex, getButtonsActive, getPeriodsText } from "./utils";
+import type { Period } from "../../services/api/getEvents";
 
-interface PeriodControlsProps {
+export interface PeriodControlsProps {
     isMobile: boolean;
+    periods: Period[];
 }
 
-const getButtonsActive: (periodsNumber: number, currentPeriod: number) => boolean[] = (periodsNumber, currentPeriod) => {
-    const buttonsActive: boolean[] = [true, true];
-    if (currentPeriod === 1)
-        buttonsActive[0] = false
-    if (currentPeriod === periodsNumber)
-        buttonsActive[1] = false;
-    return buttonsActive;
+export enum DIRECTIONS {
+    PREV = 'PREV', 
+    NEXT = 'NEXT'
 }
 
-
-const PeriodControls: React.FC<PeriodControlsProps> = ({isMobile}) => {
+const PeriodControls: React.FC<PeriodControlsProps> = ({isMobile, periods}) => {
     const dispatch = useDispatch();
-    const periodNumber = useSelector(getPeriodNumber);
-    const periods = useSelector(getPeriods);
-    const controlsHandler = (buttonId: number) => (e: SyntheticEvent<HTMLButtonElement>) => {
-        if (buttonId && !e) {
-            return controlsHandler(buttonId);
-        }else if (e.target) {
-            if (buttonId === 1)
-                dispatch(decrementPeriod());
-            else if (buttonId === 2)
-                dispatch(incrementPeriod());
+    const activePeriodId = useSelector(getCurrentPeriod);
+    const activePeriodIndex = useMemo(() => findPeriodIndex(periods, activePeriodId), [periods, activePeriodId]);
+    const buttonsActive = useMemo(() => getButtonsActive(periods.length, activePeriodIndex), [periods.length, activePeriodIndex]);
+    const periodsText = useMemo(() => getPeriodsText(periods.length, activePeriodIndex), [periods.length, activePeriodIndex]);
+    const controlsHandler = (event: SyntheticEvent<HTMLButtonElement>) => {
+        const direction = event.currentTarget.dataset.direction;
+
+        if (direction === DIRECTIONS.PREV) {
+            dispatch(decrementPeriod());
+        } else if (direction === DIRECTIONS.NEXT) {
+            dispatch(incrementPeriod());
         }
+    };
+    if (!periods.length || activePeriodIndex < 0) {
+        return null;
     }
+    
     return (
         <div className={styles.container}>
-            <PeriodControlsUI periodsNumber={periods.length} periodNumber={periodNumber} buttonsActive={getButtonsActive(periods.length, periodNumber)} controlsHandler={controlsHandler} isMobile={isMobile}/>
-            {isMobile && <Pagination periods={periods} periodNumber={periodNumber}/>}
+            <PeriodControlsUI periodsText={periodsText} buttonsActive={buttonsActive} controlsHandler={controlsHandler} isMobile={isMobile}/>
+            {isMobile && <Pagination periods={periods} activePeriodIndex={activePeriodIndex}/>}
         </div>
     )
 }

@@ -4,12 +4,16 @@ export interface HeaderData {
     fullName: string;
     role: string;
     description: string;
+    tg_link: string;
+    tg_link_aria_label: string;
 }
 
 const initialState: HeaderData = {
     fullName: 'Александр Анненков',
     role: 'Технический лидер',
-    description: 'Достигаю целей силами небольших команд, работаю в условиях кризиса и высокой неопределённости, довожу сложные проекты до результата'
+    description: 'Достигаю целей силами небольших команд, работаю в условиях кризиса и высокой неопределённости, довожу сложные проекты до результата',
+    tg_link: 'https://t.me/alexander_aap',
+    tg_link_aria_label: 'Телеграм канал Анненкова Александра'
 }
 
 
@@ -18,10 +22,10 @@ const headerSlice = createSlice({
     initialState,
     reducers: {},
     selectors: {
-        getHeader: (state) => state
+        selectHeader: (state) => state
     }
 })
 
 
 export default headerSlice;
-export const { getHeader } = headerSlice.selectors;
+export const { selectHeader } = headerSlice.selectors;

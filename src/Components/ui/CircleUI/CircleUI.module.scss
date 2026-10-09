@@ -1,4 +1,10 @@
 .container {
-    // display: none;
-    z-index: 100;
+    --circle-stroke-color: #42567a;
+}
+
+.path {
+    stroke: var(--circle-stroke-color, #ccc);
+    fill: none;
+    stroke-width: 1;
+    stroke-opacity: 0.1;
 }

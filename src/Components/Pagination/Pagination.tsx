@@ -1,20 +1,25 @@
+import type { SyntheticEvent } from "react";
 import { periodChange } from "../../../src/services/slices/periodsSlice";
 import { useDispatch } from "../../../src/services/store";
 import PaginationUI from "../ui/PaginationUI/PaginationUI";
-import type { periodType } from "../../../src/services/types";
 import type { Period } from "../../services/api/getEvents";
+import type { UUID } from "crypto";
 
-interface PaginationProps {
+export interface PaginationProps {
     periods: Period[];
-    periodNumber: number;
+    activePeriodIndex: number;
 }
 
-const Pagination: React.FC<PaginationProps> = ({periods, periodNumber}) =>{
+const Pagination: React.FC<PaginationProps> = ({periods, activePeriodIndex}) =>{
     const dispatch = useDispatch();
-    const handleDotClick = (periodId: string) => () => dispatch(periodChange({periodId: periodId}));
-    const hadleDotClickList = periods.map((period) => handleDotClick(period.periodId));
+    const onPeriodClick = (e: SyntheticEvent<HTMLButtonElement>) => {
+        const id     = e.currentTarget.dataset.id as UUID;
+        if (!id)
+            return;
+        dispatch(periodChange({id: id}))
+    }
     return (
-        <PaginationUI periods={periods} periodNumber={periodNumber} handleDotClicks={hadleDotClickList} />
+        <PaginationUI paginationItems={periods.map((period) => ({id: period.id}))} activePeriodIndex={activePeriodIndex} onPeriodClick={onPeriodClick} />
     )
 }
 

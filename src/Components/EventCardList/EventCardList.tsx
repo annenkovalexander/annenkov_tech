@@ -1,6 +1,4 @@
-import { useSelector } from "../../../src/services/store";
 import EventCardUI from "../ui/EventCardUI/EventCardUI";
-import { getEventsList } from "../../../src/services/slices/periodsSlice";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Swiper as SwiperType } from 'swiper';
 import { Navigation } from 'swiper/modules';
@@ -18,9 +16,8 @@ interface EventCardListProps {
 }
 
 const EventCardList = forwardRef<HTMLDivElement, EventCardListProps>(({isMobile, eventsList}, ref) => {
-    console.log(`eventsList ${eventsList}`);
     const [leftButtonVisible, setLeftButtonVisible] = useState(false);
-    const [rightButtonVisible, setRightButtonVisible] = useState(true);
+    const [rightButtonVisible, setRightButtonVisible] = useState(false);
     const swiperRef = useRef<SwiperType>();
 
     useEffect(() => {
@@ -28,10 +25,10 @@ const EventCardList = forwardRef<HTMLDivElement, EventCardListProps>(({isMobile,
             setLeftButtonVisible(false);
             setRightButtonVisible(false);
         } else {
-            setLeftButtonVisible(!swiperRef.current?.isBeginning);
-            setRightButtonVisible(!swiperRef.current?.isEnd);
+            setLeftButtonVisible(swiperRef.current ? !swiperRef.current?.isBeginning : false);
+            setRightButtonVisible(swiperRef.current ? !swiperRef.current?.isEnd : false);
         }
-    }, [isMobile]);
+    }, [isMobile, eventsList]);
     return (
         <div ref={ref} className={clsx([styles.container, isMobile ? styles.mobile : ''])}>
             {leftButtonVisible && <button 
@@ -44,8 +41,8 @@ const EventCardList = forwardRef<HTMLDivElement, EventCardListProps>(({isMobile,
                 direction="horizontal"
                 onBeforeInit={(swiper: SwiperType) => {
                     swiperRef.current = swiper;
-                    setLeftButtonVisible(!swiperRef.current?.isBeginning);
-                    setRightButtonVisible(!swiperRef.current?.isEnd);
+                    setLeftButtonVisible(false);
+                    setRightButtonVisible(swiperRef.current && !swiperRef.current?.isEnd);
                 }}
                 onReachBeginning={() => {
                     setLeftButtonVisible(false);
@@ -74,7 +71,7 @@ const EventCardList = forwardRef<HTMLDivElement, EventCardListProps>(({isMobile,
                 }}
                 className={styles.swiperContainer}
             >
-                {eventsList.map((event, index) => (
+                {eventsList.map(event => (
                     <SwiperSlide key={event.id}>
                         <EventCardUI year={event.year} description={event.description} />
                     </SwiperSlide>)

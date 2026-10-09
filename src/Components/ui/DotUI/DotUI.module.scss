@@ -1,4 +1,14 @@
 .container {
+    --stroke-dot-color: #42567a;
+    --stroke-dot-fill: #42567a;
+    --circle-dot-fill: white;
+    position: "absolute";
+    top: var(--dot-top, 0px);
+    left: var(--dot-left, 0px);
+    width: "10px";
+    height: "10px";
+    transform: 'translate(-50%, -50%)';
+    cursor: 'pointer';
     z-index: 5;
 }
 
@@ -8,6 +18,8 @@
     width: 10px;
     height: 10px;
     z-index: 10;
+    fill: var(--stroke-dot-fill, #ccc);
+    stroke: var(--stroke-dot-color, #ccc);
 }
 
 .container:not(.dotContainer.circleContainerVisible) + .container:hover .dotContainer {
@@ -36,6 +48,8 @@
     position: absolute;
     top: -23px;
     left: -23px;
+    fill: var(--circle-dot-fill, white);
+    stroke: var(--stroke-dot-color, #ccc);
 }
 
 .container:hover .circleContainer {

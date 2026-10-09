@@ -1,29 +1,23 @@
 import { useEffect, useState, useRef } from "react"
 
 export type Viewport = {
-    width: number,
-    height: number
+    width: number
 }
 
-const getViewport: () => Viewport = () => (
-    {
-        width: typeof window === "undefined" ? 1440 : window.innerWidth,
-        height: typeof window === "undefined" ? 900 : window.innerHeight
-    }
-)
+const parsedDefaultWidth = Number(process.env.DEFAULT_DESKTOP_WIDTH);
+const DEFAULT_DESKTOP_WIDTH = !Number.isNaN(parsedDefaultWidth) && Number.isFinite(parsedDefaultWidth) ? parsedDefaultWidth : 1440;
 
 export function useViewport() {
   const [viewport, setViewport] = useState<Viewport>({
-    width: typeof window !== 'undefined' ? window.innerWidth : 1440,
-    height: typeof window !== 'undefined' ? window.innerHeight : 900,
+    width: DEFAULT_DESKTOP_WIDTH
   });
-
-  const lastWidthRef = useRef(viewport.width);
+  console.log(`DEFAULT_DESKTOP_WIDTH ${DEFAULT_DESKTOP_WIDTH}`)
+  const lastWidthRef = useRef(DEFAULT_DESKTOP_WIDTH);
 
   useEffect(() => {
+    
     const handleResize = () => {
       const newWidth = window.innerWidth;
-      const newHeight = window.innerHeight;
       
       // Обновляем только если изменилась ширина
       // Игнорируем изменения высоты на мобильных
@@ -32,8 +26,10 @@ export function useViewport() {
       }
       
       lastWidthRef.current = newWidth;
-      setViewport({ width: newWidth, height: newHeight });
+      setViewport({ width: newWidth });
     };
+
+    handleResize();
 
     // Используем visualViewport для более стабильных значений
     const visualViewport = window.visualViewport;

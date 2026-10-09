@@ -59,15 +59,11 @@ const getStyleLoaders = ({ modules = false } = {}) => [
 
 module.exports = {
   mode: isProduction ? "production" : "development",
-
   target: "web",
-
   entry: {
     main: path.resolve(__dirname, "./src/index.tsx"),
   },
-
   devtool: isProduction ? "source-map" : "eval-source-map",
-
   module: {
     rules: [
       {
@@ -80,13 +76,11 @@ module.exports = {
           },
         },
       },
-
       {
         test: /\.(js|jsx)$/i,
         exclude: /node_modules/,
         use: "babel-loader",
       },
-
       {
         test: /\.html$/i,
         use: {
@@ -110,20 +104,17 @@ module.exports = {
           },
         },
       },
-
       {
         test: /\.module\.scss$/i,
         use: getStyleLoaders({
           modules: true,
         }),
       },
-
       {
         test: /\.scss$/i,
         exclude: /\.module\.scss$/i,
         use: getStyleLoaders(),
       },
-
       {
         test: /\.module\.css$/i,
         use: [
@@ -144,7 +135,6 @@ module.exports = {
           },
         ],
       },
-
       {
         test: /\.css$/i,
         exclude: /\.module\.css$/i,
@@ -160,16 +150,13 @@ module.exports = {
           },
         ],
       },
-
       {
         test: /\.(png|jpe?g|gif|webp|svg)$/i,
         type: "asset/resource",
-
         generator: {
           filename: "images/[name].[contenthash][ext]",
         },
       },
-
       {
         test: /\.(woff2?|eot|ttf|otf)$/i,
         type: "asset/resource",
@@ -219,44 +206,27 @@ module.exports = {
 
   output: {
     path: path.resolve(__dirname, "./dist"),
-
     filename: "js/[name].[contenthash].js",
-
     chunkFilename: "js/[name].[contenthash].chunk.js",
-
     assetModuleFilename: "assets/[name].[contenthash][ext]",
-
     clean: true,
-
     publicPath: process.env.PUBLIC_PATH || "/",
-
     uniqueName: "only-digital",
-
     crossOriginLoading: "anonymous",
   },
-
   optimization: {
     minimize: isProduction,
-
     moduleIds: "deterministic",
-
     chunkIds: "deterministic",
-
     runtimeChunk: {
       name: "runtime",
     },
-
     splitChunks: {
       chunks: "all",
-
       minSize: 20 * 1024,
-
       maxAsyncRequests: 20,
-
       maxInitialRequests: 20,
-
       name: false,
-
       cacheGroups: {
         defaultVendors: {
           test: /[\\/]node_modules[\\/]/,
@@ -264,7 +234,6 @@ module.exports = {
           reuseExistingChunk: true,
           idHint: "vendors",
         },
-
         default: {
           minChunks: 2,
           priority: -20,
@@ -276,9 +245,7 @@ module.exports = {
 
   performance: {
     hints: isProduction ? "warning" : false,
-
     maxAssetSize: 300 * 1024,
-
     maxEntrypointSize: 300 * 1024,
   },
 
@@ -286,29 +253,19 @@ module.exports = {
     static: {
       directory: path.join(__dirname, "./dist"),
     },
-
     compress: true,
-
     historyApiFallback: true,
-
     port: 4001,
-
     hot: true,
-
     open: false,
   },
 
   stats: {
     preset: "normal",
-
     colors: true,
-
     assets: true,
-
     chunks: true,
-
     modules: false,
-
     children: false,
   },
 };
