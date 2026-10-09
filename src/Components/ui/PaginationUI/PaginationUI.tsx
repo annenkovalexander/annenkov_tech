@@ -22,7 +22,7 @@ const PaginationUI: React.FC<PaginationUIProps> = ({
             <button
                 key={paginationItem.id}
                 type="button"
-                data-period-id={paginationItem.id}
+                data-id={paginationItem.id}
                 className={clsx(
                     styles.r,
                     activePeriodIndex === index && styles.activeBullet,
