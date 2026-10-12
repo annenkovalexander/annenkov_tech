@@ -2,89 +2,77 @@
     --stroke-dot-color: #42567a;
     --stroke-dot-fill: #42567a;
     --circle-dot-fill: white;
-    position: "absolute";
+
+    position: absolute;
     top: var(--dot-top, 0px);
     left: var(--dot-left, 0px);
-    width: "10px";
-    height: "10px";
-    transform: 'translate(-50%, -50%)';
-    cursor: 'pointer';
-    z-index: 5;
+    z-index: 6;
 }
 
 .dotContainer {
-    display: flex;
     position: absolute;
-    width: 10px;
-    height: 10px;
-    z-index: 10;
-    fill: var(--stroke-dot-fill, #ccc);
-    stroke: var(--stroke-dot-color, #ccc);
-}
-
-.container:not(.dotContainer.circleContainerVisible) + .container:hover .dotContainer {
-    visibility: hidden;
-}
-
-.dotContainer:not(:has(+.circleContainerVisible)) {
-    visibility: visible;
-}
-
-.dotContainer:has(+.circleContainerVisible) {
-    visibility: hidden;
-}
-
-.container:hover {
+    top: -20px;
+    left: -20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    fill: var(--stroke-dot-fill);
+    stroke: var(--stroke-dot-color);
     cursor: pointer;
 }
 
-.container:hover .dotContainer {
-    visibility: hidden;
-}
-
-
 .circleContainer {
-    visibility: hidden;
     position: absolute;
     top: -23px;
     left: -23px;
-    fill: var(--circle-dot-fill, white);
-    stroke: var(--stroke-dot-color, #ccc);
+    visibility: hidden;
+    padding: 0;
+    border: none;
+    background: transparent;
+    fill: var(--circle-dot-fill);
+    stroke: var(--stroke-dot-color);
+    cursor: pointer;
 }
 
-.container:hover .circleContainer {
-    visibility: visible;
+.container:hover .dotContainer,
+.container:has(.circleContainerVisible) .dotContainer {
+    visibility: hidden;
 }
 
+.container:hover .circleContainer,
 .circleContainerVisible {
     visibility: visible;
 }
 
 .periodNumber {
-    font-family: 'PT Sans', Arial, Helvetica, sans-serif;
-    font-weight: 400;
-    font-size: 20px;
-    line-height: 30px;
     position: absolute;
     top: 13px;
     left: 21px;
+    margin: 0;
+    font-family: 'PT Sans', Arial, Helvetica, sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 30px;
 }
 
 .periodText {
-    font-family: 'PT Sans', Arial, Helvetica, sans-serif;
-    font-weight: 700;
-    font-size: 20px;
-    line-height: 30px;
     position: absolute;
     top: 13px;
     left: calc(28px * 2 + 20px);
     visibility: hidden;
+    margin: 0;
+    font-family: 'PT Sans', Arial, Helvetica, sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 30px;
 }
 
-.container:hover .periodText {
-    visibility: visible;
-}
-
+.container:hover .periodText,
 .circleContainerVisible .periodText {
     visibility: visible;
 }
