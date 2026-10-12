@@ -10,7 +10,9 @@ import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { getCenterY, getCircleRadius, getDelta, getNewPositions, getPercentageByDotIndex, getDotCoordinates, DOT_CONFIG } from "./utils";
 import type { RefElement, TRefsObject } from "./utils";
 import { useViewport } from "../../services/hooks/useViewport";
-import type { UUID } from "crypto";
+import type { UUID } from "../../services/api/getEvents";
+import styles from './Circle.module.scss';
+
 
 
 gsap.registerPlugin(useGSAP);
@@ -118,7 +120,8 @@ const Circle: React.FC = () => {
     return (
         <>
             <div 
-                ref={container} 
+                ref={container}
+                className={styles.circleLayer}
                 style={{
                     position: "absolute", 
                     top: `${displayCenterY}px`, 

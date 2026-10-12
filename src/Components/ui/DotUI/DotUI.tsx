@@ -37,12 +37,12 @@ const DotUI = forwardRef<HTMLDivElement, DotUIProps>(({
             onClick={onClick}
             style={{
                 position: 'absolute',
-                '--dot-top': `${dotCoordinates.x}px`, 
+                '--dot-top': `${dotCoordinates.y}px`, 
                 '--dot-left': `${dotCoordinates.x}px`, 
             } as React.CSSProperties}
         >
-            <div className={styles.dotContainer}>
-                <svg width={dotRadius * 2} height={dotRadius * 2} viewBox={`0 0 ${dotDiameter} ${dotDiameter}`}>
+            <button type="button" className={styles.dotContainer}>
+                <svg width={dotRadius * 2} height={dotRadius * 2} viewBox={`0 0 ${dotDiameter+2} ${dotDiameter+2}`}>
                     <circle
                         cx={dotRadius}
                         cy={dotRadius}
@@ -50,8 +50,8 @@ const DotUI = forwardRef<HTMLDivElement, DotUIProps>(({
                         strokeWidth={strokeWidth}
                     />
                 </svg>
-            </div>
-            <div className={clsx([styles.circleContainer, isActive ? styles.circleContainerVisible : ''])}>
+            </button>
+            <button type="button" className={clsx([styles.circleContainer, isActive ? styles.circleContainerVisible : ''])}>
                 <svg width={circleDiameter} height={circleDiameter} viewBox={`0 0 ${circleDiameter} ${circleDiameter}`}>
                     <circle
                         cx={circleRadius}
@@ -62,7 +62,7 @@ const DotUI = forwardRef<HTMLDivElement, DotUIProps>(({
                 </svg>
                 <p className={styles.periodNumber}>{period.periodText}</p>
                 <p className={styles.periodText}>{text}</p>
-            </div>
+            </button>
         </div>
         
     ));

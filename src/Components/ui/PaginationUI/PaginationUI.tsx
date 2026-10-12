@@ -1,5 +1,5 @@
+import { memo } from 'react';
 import clsx from 'clsx';
-import { memo, type MouseEventHandler } from 'react';
 import styles from './PaginationUI.module.scss';
 
 type PaginationItem = {
@@ -9,30 +9,34 @@ type PaginationItem = {
 interface PaginationUIProps {
     paginationItems: PaginationItem[];
     activePeriodIndex: number;
-    onPeriodClick: MouseEventHandler<HTMLButtonElement>;
+    onPeriodClick: React.MouseEventHandler<HTMLButtonElement>;
 }
 
-const PaginationUI: React.FC<PaginationUIProps> = ({
+const PaginationUI = ({
     paginationItems,
     activePeriodIndex,
     onPeriodClick,
-}) => (
-    <div className={styles.container}>
-        {paginationItems.map((paginationItem, index) => (
-            <button
-                key={paginationItem.id}
-                type="button"
-                data-period-id={paginationItem.id}
-                className={clsx(
-                    styles.r,
-                    activePeriodIndex === index && styles.activeBullet,
-                )}
-                onClick={onPeriodClick}
-                aria-label={`Выбрать период ${index + 1}`}
-                aria-current={activePeriodIndex === index ? 'true' : undefined}
-            />
-        ))}
-    </div>
+}: PaginationUIProps) => (
+    <nav className={styles.container} aria-label="Навигация по периодам">
+        {paginationItems.map((item, index) => {
+            const isActive = index === activePeriodIndex;
+
+            return (
+                <button
+                    key={item.id}
+                    type="button"
+                    data-period-id={item.id}
+                    className={clsx(
+                        styles.bulletButton,
+                        isActive && styles.activeBullet,
+                    )}
+                    onClick={onPeriodClick}
+                    aria-label={`Перейти к периоду ${index + 1}`}
+                    aria-current={isActive ? 'true' : undefined}
+                />
+            );
+        })}
+    </nav>
 );
 
 export default memo(PaginationUI);
