@@ -9,6 +9,13 @@
     z-index: 6;
 }
 
+.dotContainer,
+.circleContainer {
+    color: #42567a;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
 .dotContainer {
     position: absolute;
     top: -20px;
@@ -39,12 +46,6 @@
     cursor: pointer;
 }
 
-.container:hover .dotContainer,
-.container:has(.circleContainerVisible) .dotContainer {
-    visibility: hidden;
-}
-
-.container:hover .circleContainer,
 .circleContainerVisible {
     visibility: visible;
 }
@@ -72,7 +73,17 @@
     line-height: 30px;
 }
 
-.container:hover .periodText,
 .circleContainerVisible .periodText {
     visibility: visible;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .container:hover .dotContainer {
+        visibility: hidden;
+    }
+
+    .container:hover .circleContainer,
+    .container:hover .periodText {
+        visibility: visible;
+    }
 }
