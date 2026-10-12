@@ -50,6 +50,13 @@
     visibility: visible;
 }
 
+
+.periodNumber,
+.periodText {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
 .periodNumber {
     position: absolute;
     top: 13px;
