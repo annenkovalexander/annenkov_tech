@@ -18,10 +18,9 @@ export const DOT_CONFIG = {
 
 
 export type RefElement<T = HTMLElement> = {
-    element: T,
-    periodId: UUID,
-    position: number
-}
+    element: T;
+    periodId: UUID;
+};
 
 
 export type TRefsObject<T> = {
@@ -50,22 +49,42 @@ export const getCircleRadius = (viewport: Viewport): number => {
 };
 
 
-export const getDelta = (element: RefElement<HTMLDivElement>, periodsLength: number): number => {
-    const position = Math.abs(element.position % periodsLength);
-    return Math.abs(position - periodsLength) < position 
-        ? (periodsLength - position) 
-        : -position;
+export const getDelta = (
+    position: number,
+    periodsLength: number,
+): number => {
+    if (periodsLength <= 0) {
+        return 0;
+    }
+
+    const normalizedPosition =
+        ((position % periodsLength) + periodsLength) % periodsLength;
+
+    const clockwiseDelta = periodsLength - normalizedPosition;
+    const counterclockwiseDelta = -normalizedPosition;
+
+    return Math.abs(clockwiseDelta) <= Math.abs(counterclockwiseDelta)
+        ? clockwiseDelta
+        : counterclockwiseDelta;
 };
 
-
 export const getNewPositions = (
-    refsArray: React.MutableRefObject<TRefsObject<HTMLDivElement>>, 
+    currentPositions: Map<UUID, number>,
     delta: number,
-    periodsLength: number
-): number[] => refsArray.current.refElements.map((element) => {
-        const currentPosition = (element.position + delta) % periodsLength;
-        return currentPosition < 0 ? currentPosition + periodsLength : currentPosition;
+    periodsLength: number,
+): Map<UUID, number> => {
+    const nextPositions = new Map<UUID, number>();
+
+    currentPositions.forEach((position, periodId) => {
+        const nextPosition =
+            (((position + delta) % periodsLength) + periodsLength) %
+            periodsLength;
+
+        nextPositions.set(periodId, nextPosition);
     });
+
+    return nextPositions;
+};
 
 
 export const getDotCoordinates = (
