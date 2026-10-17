@@ -10,6 +10,7 @@ const CircleUI = forwardRef<SVGPathElement, CircleUIProps>(
     ({ radius, pathD }, ref) => (
         <svg
             className={styles.container}
+            pointerEvents="none"
             width={radius * 2}
             height={radius * 2}
             viewBox={`0 0 ${radius * 2} ${radius * 2}`}
