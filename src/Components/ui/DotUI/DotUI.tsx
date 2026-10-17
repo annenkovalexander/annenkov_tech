@@ -1,80 +1,82 @@
 import { forwardRef } from 'react';
-import styles from './DotUI.module.scss';
 import clsx from 'clsx';
-import type { Period } from '../../../services/api/getEvents';
+import styles from './DotUI.module.scss';
 
 interface DotUIProps {
     text: string;
     isActive: boolean;
     dotRadius: number;
-    dotDiameter: number;
     circleRadius: number;
-    circleDiameter: number;
     strokeWidth: number;
-    period: Period;
+    periodText: string;
     onClick?: () => void;
 }
 
 const DotUI = forwardRef<HTMLDivElement, DotUIProps>(({
     text,
     isActive,
-    period,
+    periodText,
     dotRadius,
-    dotDiameter,
     circleRadius,
-    circleDiameter,
     strokeWidth,
     onClick,
-}, ref) => (
-    <div
-        ref={ref}
-        className={styles.container}
-        onClick={onClick}
-    >
-        <button
-            type="button"
-            className={styles.dotContainer}
-            onClick={onClick}
-        >
-            <svg
-                width={dotRadius * 2}
-                height={dotRadius * 2}
-                viewBox={`0 0 ${dotDiameter} ${dotDiameter}`}
-            >
-                <circle
-                    cx={dotRadius}
-                    cy={dotRadius}
-                    r={dotRadius - strokeWidth / 2}
-                    strokeWidth={strokeWidth}
-                />
-            </svg>
-        </button>
+}, ref) => {
+    const containerDiameter = circleRadius * 2 + strokeWidth;
 
-        <button
-            type="button"
-            className={clsx(
-                styles.circleContainer,
-                isActive && styles.circleContainerVisible,
-            )}
-            onClick={onClick}
-        >
-            <svg
-                width={circleDiameter}
-                height={circleDiameter}
-                viewBox={`0 0 ${circleDiameter} ${circleDiameter}`}
-            >
-                <circle
-                    cx={circleRadius}
-                    cy={circleRadius}
-                    r={circleRadius - strokeWidth / 2}
-                    strokeWidth={strokeWidth}
-                />
-            </svg>
+    const dotOffset = (containerDiameter - dotRadius * 2) / 2;
+    const circleOffset = strokeWidth / 2;
 
-            <p className={styles.periodNumber}>{period.periodText}</p>
-            <p className={styles.periodText}>{text}</p>
-        </button>
-    </div>
-));
+    return (
+        <div
+            ref={ref}
+            className={styles.container}
+        >
+            <div
+                className={styles.dotContainer}
+                aria-hidden="true"
+            >
+                <svg
+                    width={containerDiameter}
+                    height={containerDiameter}
+                    viewBox={`0 0 ${containerDiameter} ${containerDiameter}`}
+                >
+                    <circle
+                        cx={dotOffset + dotRadius}
+                        cy={dotOffset + dotRadius}
+                        r={dotRadius}
+                        strokeWidth={strokeWidth}
+                    />
+                </svg>
+            </div>
+
+            <button
+                type="button"
+                className={clsx(
+                    styles.circleContainer,
+                    isActive && styles.circleContainerVisible,
+                )}
+                onClick={onClick}
+                aria-label={text}
+            >
+                <svg
+                    width={containerDiameter + strokeWidth}
+                    height={containerDiameter + strokeWidth}
+                    viewBox={`0 0 ${containerDiameter + strokeWidth} ${containerDiameter + strokeWidth}`}
+                >
+                    <circle
+                        cx={circleOffset + circleRadius}
+                        cy={circleOffset + circleRadius}
+                        r={circleRadius}
+                        strokeWidth={strokeWidth}
+                    />
+                </svg>
+
+                <p className={styles.periodNumber}>{periodText}</p>
+                <p className={styles.periodText}>{text}</p>
+            </button>
+        </div>
+
+    );
+});
 
 export default DotUI;

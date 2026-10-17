@@ -78,6 +78,7 @@
     "gh-pages": "^6.3.0",
     "html-loader": "^5.1.0",
     "html-webpack-plugin": "^5.6.0",
+    "immer": "^11.1.21",
     "jest": "^29.7.0",
     "jest-css-modules-transform": "^4.4.2",
     "jest-environment-jsdom": "^29.7.0",
@@ -126,7 +127,8 @@
     "docs-generate:overview": "node ./scripts/generate-frontend-overview.mjs",
     "docs-generate:api": "node ./scripts/generate-frontend-api-endpoints.mjs",
     "docs-generate:contracts": "node ./scripts/generate-frontend-contracts.mjs",
-    "docs-generate:state": "node ./scripts/generate-frontend-store-and-state.mts"
+    "docs-generate:state": "node ./scripts/generate-frontend-store-and-state.mts",
+    "docs-generate:all": "npm run docs-generate:overview && npm run docs-generate:api && npm run docs-generate:contracts && npm run docs-generate:state"
   },
   "keywords": [
     "webpack",

@@ -1,32 +1,44 @@
 import type { Period } from "../../services/api/getEvents";
 
 
-export const findPeriodIndex = (periods: Period[], currentPeriodId: string): number => 
+export type PeriodButtonsEnabled = {
+    prevEnabled: boolean;
+    nextEnabled: boolean;
+}
+
+export const findPeriodIndex = (periods: readonly Period[], currentPeriodId: string): number => 
         periods.findIndex((period: Period) => period.id === currentPeriodId);
 
 export const getButtonsActive = (
     periodsLength: number,
     activePeriodIndex: number,
-): [boolean, boolean] => {
+): PeriodButtonsEnabled => {
 
-    if (activePeriodIndex < 0 || periodsLength <= 1) {
-        return [false, false];
+    if (activePeriodIndex < 0 || periodsLength <= 1 || activePeriodIndex >= periodsLength) {
+        return {
+            prevEnabled: false,
+            nextEnabled: false
+        };
     }
 
-    return [
-        activePeriodIndex > 0,
-        activePeriodIndex < periodsLength - 1,
-    ];
-};
+    return {
+        prevEnabled: activePeriodIndex > 0,
+        nextEnabled: activePeriodIndex < periodsLength - 1,
+    };
+}
 
 export const getPeriodsText = (
     periodsLength: number,
     activePeriodIndex: number,
 ): string => {
+    if (activePeriodIndex < 0 || periodsLength <= 1 || activePeriodIndex >= periodsLength) {
+        return "";
+    }
+
     const currentPeriodNumber = activePeriodIndex + 1;
 
     return [
         String(currentPeriodNumber).padStart(2, '0'),
         String(periodsLength).padStart(2, '0'),
     ].join('/');
-};
+}

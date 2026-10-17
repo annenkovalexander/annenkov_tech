@@ -1,23 +1,22 @@
-import periodsData from '../mock.json';
-export type UUID = `${string}-${string}-${string}-${string}-${string}`;
-export type Event = {
-    id: UUID,
-    year: number,
-    description: string
-};
+/*
+    TODO: после реализации API получать периоды GET-запросом из внешнего API
+    TODO: уйти от использования mock.json
+    TODO: рассмотреть создание отдельного класса DataValidationError для ошибок валидации входных данных
+*/
 
-export type Period = {
-    id: UUID,
-    category: string,
-    periodText: string,
-    startYear: number,
-    endYear: number,
-    events: Event[]
+import periodsData from '../mock.json';
+import type { Period, UUID, Event } from '../../types/period';
+
+export class DataValidationError extends Error {
+    constructor(message = 'Структура данных не соответствует контракту Period') {
+        super(message);
+        this.name = 'DataValidationError';
+    }
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null;
 
-const isUUID = (value: unknown): value is UUID =>
+export const isUUID = (value: unknown): value is UUID =>
     typeof value === 'string' &&
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value)
 
@@ -49,11 +48,11 @@ const getPeriods = (): Period[] => {
     if (periodsData && Array.isArray(periodsData) && periodsData.every((period) => isPeriod(period))) {
         return periodsData as Period[];
     } else {
-        throw new Error("Структура пришедших данных отличается от Period");
+        throw new DataValidationError("Структура пришедших данных отличается от Period");
     }
 }
 
-export const fetchData = (delay: number): Promise<Period[]> => 
+export const fetchData = (delay: number): Promise<ReadonlyArray<Period>> => 
     new Promise((resolve, reject) => {
         if (!Number.isFinite(delay) || delay < 0) {
             reject(new Error("Значение задержки имеет недопустимое значение"));

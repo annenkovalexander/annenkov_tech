@@ -5,14 +5,17 @@ interface SvgLineProps {
     y1?: number;
     x2?: number;
     y2?: number;
-  }
+}
+
+type SvgHorizontalLineUIProps = SvgLineProps;
+type SvgVerticalLineUIProps = Omit<SvgLineProps, 'x2'>;
   
-const SvgHorizontalLineUI: React.FC<SvgLineProps> = ({
+const SvgHorizontalLineUI = ({
     x1 = 0,
     y1 = 100,
     x2 = 1440,
-    y2 = 100
-}: SvgLineProps): JSX.Element => (
+    y2 = 100,
+}: SvgHorizontalLineUIProps) => (
     <div className={styles.container}>
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -29,11 +32,11 @@ const SvgHorizontalLineUI: React.FC<SvgLineProps> = ({
     </div>
 );
 
-const SvgVerticalLineUI: React.FC<SvgLineProps> = ({
+const SvgVerticalLineUI = ({
     x1 = 0,
     y1 = 0,
-    y2 = 100
-}: SvgLineProps): JSX.Element => (
+    y2 = 100,
+}: SvgVerticalLineUIProps) => (
     <div className={styles.container}>
         <svg
             xmlns="http://www.w3.org/2000/svg"

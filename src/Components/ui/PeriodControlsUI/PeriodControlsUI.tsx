@@ -1,49 +1,58 @@
-import type { SyntheticEvent } from 'react';
 import { clsx } from 'clsx';
 import styles from './PeriodControlsUI.module.scss';
-import { DIRECTIONS } from '../../PeriodControls/PeriodControls';
+import type { PeriodButtonsEnabled } from '../../PeriodControls/utils';
 
-interface TPeriodControls {
+interface PeriodControlsProps {
     periodsText: string;
-    buttonsActive: [boolean, boolean];
+    buttonsActive: PeriodButtonsEnabled;
     isMobile: boolean;
-    controlsHandler: (e: SyntheticEvent<HTMLButtonElement>) => void;
+    onPrev: () => void;
+    onNext: () => void;
 }
 
-
-
-const PeriodControlsUI: React.FC<TPeriodControls> = ({periodsText, buttonsActive, isMobile, controlsHandler}) => (
-        <div className={isMobile ? styles.paginationContainer : ''}>
-            <div className={clsx([styles.container, isMobile ? styles.mobile : ''])}>
-                <p className={styles.periodText}>{periodsText}</p>
-                <div className={styles.buttonsContainer}>
-                    <button
-                        type="button"
-                        data-direction={DIRECTIONS.PREV}
-                        className={clsx(
-                            styles.button,
-                            styles.leftButton,
-                            !buttonsActive[0] && styles.buttonDisabled,
-                        )}
-                        disabled={!buttonsActive[0]}
-                        onClick={controlsHandler}
-                        aria-label="Предыдущий период"
-                    />
-
-                    <button
-                        type="button"
-                        data-direction={DIRECTIONS.NEXT}
-                        className={clsx(
-                            styles.button,
-                            styles.rightButton,
-                            !buttonsActive[1] && styles.buttonDisabled,
-                        )}
-                        disabled={!buttonsActive[1]}
-                        onClick={controlsHandler}
-                        aria-label="Следующий период"
-                    />
-                </div>
+const PeriodControlsUI = ({
+    periodsText,
+    buttonsActive,
+    isMobile,
+    onPrev,
+    onNext,
+}: PeriodControlsProps) => (
+    <div className={isMobile ? styles.paginationContainer : ''}>
+        <div className={clsx(
+            styles.container, 
+            isMobile && styles.mobile
+        )}>
+            <p className={styles.periodText}>{periodsText}</p>
+            <div className={styles.buttonsContainer}>
+                <button
+                    type="button"
+                    className={clsx(
+                        styles.button,
+                        styles.leftButton,
+                        !buttonsActive.prevEnabled && styles.buttonDisabled,
+                    )}
+                    disabled={!buttonsActive.prevEnabled}
+                    onClick={onPrev}
+                    aria-label="Предыдущий период"
+                >
+                    {'<'}
+                </button>
+                <button
+                    type="button"
+                    className={clsx(
+                        styles.button,
+                        styles.rightButton,
+                        !buttonsActive.nextEnabled && styles.buttonDisabled,
+                    )}
+                    disabled={!buttonsActive.nextEnabled}
+                    onClick={onNext}
+                    aria-label="Следующий период"
+                >
+                    {'>'}
+                </button>
             </div>
         </div>
-    )
+    </div>
+);
+
 export default PeriodControlsUI;
