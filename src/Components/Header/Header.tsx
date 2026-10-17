@@ -9,7 +9,7 @@ const Header = () => {
         description, 
         tg_link, 
         tg_link_aria_label 
-    } = useSelector(selectHeader);
+    }: HeaderData = useSelector(selectHeader);
     return (
         <HeaderUI 
             fullName={fullName} 

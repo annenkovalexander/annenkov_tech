@@ -1,14 +1,14 @@
 import styles from './EventCardUI.module.scss';
 
-interface TEventCardProps {
+interface EventCardProps {
     year: number;
     description: string;
 }
 
-const EventCardUI: React.FC<TEventCardProps> = ({year, description}) => (
-        <div className={styles.container}>
-            <div className={styles.year}>{year}</div>
+const EventCardUI = ({year, description}: EventCardProps) => (
+        <article className={styles.container}>
+            <h3 className={styles.year}>{year}</h3>
             <p className={styles.description}>{description}</p>
-        </div>
+        </article>
     )
 export default EventCardUI;

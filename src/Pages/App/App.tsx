@@ -18,7 +18,7 @@ import PeriodTitle from "../../Components/PeriodTitle/PeriodTitle";
 import styles from "./App.module.scss";
 
 import { useSelector } from "../../services/store";
-import { getCurrentPeriod, getEventsList, getPeriods, getLoadingStatus, getError } from "../../services/slices/periodsSlice";
+import { getCurrentPeriod, getEventsList, getPeriods, getIsLoading, getError } from "../../services/slices/periodsSlice";
 import { useDispatch } from "../../services/store";
 import Header from "../../Components/Header/Header";
 import { loadPeriods } from "../../services/thunks/periodThunk";
@@ -43,9 +43,7 @@ const INITIAL_DELAY =
         : 1500;
 
 const App = () => {
-  const [isMobile, setIsMobile] = useState(
-    window.innerWidth <= MOBILE_BREAKPOINT
-  );
+  const [isMobile, setIsMobile] = useState(false);
   const dispatch = useDispatch();
   const container = useRef<HTMLDivElement | null>(null);
   const periodTitleRef = useRef<HTMLDivElement | null>(null);
@@ -54,22 +52,20 @@ const App = () => {
   const eventsList = useSelector(getEventsList);
   const currentPeriod = useSelector(getCurrentPeriod);
   const periods = useSelector(getPeriods);
-  const loadingStatus = useSelector(getLoadingStatus);
+  const isLoading = useSelector(getIsLoading);
   const error = useSelector(getError);
 
-  
+  const toBeDisplayed = !error && eventsList.length > 0;
+
   useEffect(() => {
     dispatch(loadPeriods(INITIAL_DELAY));
   }, [dispatch]);
 
   useEffect(() => {
-    const handleResize = () => {
+    const handleResize = () =>
       setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
-      
-    };
-
+    handleResize();
     window.addEventListener("resize", handleResize);
-
     return () => {
       window.removeEventListener("resize", handleResize);
     };
@@ -119,14 +115,23 @@ const App = () => {
     }
   );
 
+
   return (
     <div
       ref={container}
       className={styles.container}
     >
+      {error && (
+          <div
+              className={styles.error}
+              role="alert"
+          >
+              Не удалось загрузить периоды. Попробуйте обновить страницу.
+          </div>
+      )}
       {!isMobile && <Circle />}
       <Header />
-      <Period loadingStatus={loadingStatus}/>
+      <Period isLoading={isLoading}/>
 
       {isMobile && (
         <PeriodTitle ref={periodTitleRef} />
@@ -145,7 +150,7 @@ const App = () => {
             : styles.sliderLayoutDesktop
         )}
       >
-        {!error && !isMobile && eventsList.length > 0 && (<PeriodControls isMobile={isMobile} periods={periods}/>)}
+        {!isMobile && toBeDisplayed && (<PeriodControls isMobile={isMobile} periods={periods}/>)}
         <Suspense
           fallback={
             <div className={styles.loader} />
@@ -157,7 +162,7 @@ const App = () => {
             eventsList={eventsList}
           />
         </Suspense>
-        {!error && isMobile && eventsList.length > 0 && (<PeriodControls isMobile={isMobile} periods={periods}/>)}
+        {isMobile && toBeDisplayed && (<PeriodControls isMobile={isMobile} periods={periods}/>)}
       </div>
       
     </div>

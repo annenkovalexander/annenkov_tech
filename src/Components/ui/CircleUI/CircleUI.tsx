@@ -19,7 +19,6 @@ const CircleUI = forwardRef<SVGPathElement, CircleUIProps>(
                 ref={ref}
                 className={styles.path}
                 d={pathD}
-                color='black'
             />
         </svg>
     ),

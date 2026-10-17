@@ -1,40 +1,47 @@
-import { useEffect, useRef } from "react";
 import PeriodUI from "../ui/PeriodUI/PeriodUI";
 import { useSelector } from "../../../src/services/store";
 import { getCurrentPeriodData } from "../../../src/services/slices/periodsSlice";
 import styles from './Period.module.scss';
 import { getYearList } from "./utils";
+import { usePrevious } from "../../services/hooks/usePrevious";
+import { useMemo } from "react";
 
 interface PeriodProps {
-    loadingStatus: string;
+    isLoading: boolean;
 }
 
-const Period = ({ loadingStatus }: PeriodProps) => {
+const parsedLoadingMessage = process.env.LOADING_MESSAGE ?? 'Загружаем периоды...';
+
+const Period = ({
+    isLoading,
+}: PeriodProps) => {
     const yearsData = useSelector(getCurrentPeriodData);
-    const yearStartOld = useRef<number>(new Date().getFullYear());
-    const yearEndOld = useRef<number>(new Date().getFullYear());
-    useEffect(() => {
-        yearStartOld.current = yearsData?.startYear ?? new Date().getFullYear();
-        yearEndOld.current = yearsData?.endYear ?? new Date().getFullYear();
-    }, [yearsData]);
-    if (loadingStatus) {
+    const previousYearStart = usePrevious(yearsData?.startYear);
+    const previousYearEnd = usePrevious(yearsData?.endYear);
+    const currentYear = new Date().getFullYear();
+    const startYear = yearsData && yearsData.startYear ? yearsData.startYear : currentYear;
+    const endYear = yearsData && yearsData.endYear ? yearsData.endYear : currentYear;
+    const yearsListStartYear = useMemo(
+        () => getYearList(startYear, previousYearStart ?? currentYear),
+        [startYear, previousYearStart, currentYear],
+    );
+    const yearsListEndYear = useMemo(
+        () => getYearList(endYear, previousYearEnd ?? currentYear),
+        [endYear, previousYearEnd, currentYear],
+    );
+    if (isLoading) {
         return (
             <div className={styles.container} role="status">
-                {loadingStatus}
+                {parsedLoadingMessage}
             </div>
-        )
+        );
     }
-    if (yearsData?.startYear && yearsData?.endYear) {
-        const yearsListStartYear = getYearList(yearsData.startYear, yearStartOld.current)
-        const yearsListEndYear = getYearList(yearsData.endYear, yearEndOld.current)
-        return (
-            <>
-                <PeriodUI yearsListStartYear={yearsListStartYear} yearsListEndYear={yearsListEndYear} />
-            </>
-        )
-    }
-    return null;
-       
-}
+    return (
+        <PeriodUI
+            yearsListStartYear={yearsListStartYear}
+            yearsListEndYear={yearsListEndYear}
+        />
+    );
+};
 
 export default Period;

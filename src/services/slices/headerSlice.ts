@@ -1,31 +1,28 @@
-import { createSlice } from "@reduxjs/toolkit";
+/*
+ * TODO: добавить получение HeaderData через GET-запрос
+ * после реализации API.
+ */
+import { createSlice } from '@reduxjs/toolkit';
+import mockHeader from '../headerMock.json';
 
 export interface HeaderData {
     fullName: string;
     role: string;
     description: string;
-    tg_link: string;
-    tg_link_aria_label: string;
+    tg_link?: string;
+    tg_link_aria_label?: string;
 }
 
-const initialState: HeaderData = {
-    fullName: 'Александр Анненков',
-    role: 'Технический лидер',
-    description: 'Достигаю целей силами небольших команд, работаю в условиях кризиса и высокой неопределённости, довожу сложные проекты до результата',
-    tg_link: 'https://t.me/alexander_aap',
-    tg_link_aria_label: 'Телеграм канал Анненкова Александра'
-}
-
+const initialState: HeaderData = mockHeader;
 
 const headerSlice = createSlice({
     name: 'header',
     initialState,
     reducers: {},
     selectors: {
-        selectHeader: (state) => state
-    }
-})
-
+        selectHeader: (state: HeaderData) => state,
+    },
+});
 
 export default headerSlice;
 export const { selectHeader } = headerSlice.selectors;

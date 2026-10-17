@@ -11,45 +11,36 @@
 
 .dotContainer,
 .circleContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0;
+    border: none;
+    transform: translate(-50%, -50%);
+    background: transparent;
     color: #42567a;
     -webkit-appearance: none;
     appearance: none;
+    cursor: pointer;
 }
 
 .dotContainer {
-    position: absolute;
-    top: -20px;
-    left: -20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    border: none;
-    background: transparent;
     fill: var(--stroke-dot-fill);
     stroke: var(--stroke-dot-color);
-    cursor: pointer;
 }
 
 .circleContainer {
-    position: absolute;
-    top: -23px;
-    left: -23px;
     visibility: hidden;
-    padding: 0;
-    border: none;
-    background: transparent;
     fill: var(--circle-dot-fill);
     stroke: var(--stroke-dot-color);
-    cursor: pointer;
 }
 
 .circleContainerVisible {
     visibility: visible;
 }
-
 
 .periodNumber,
 .periodText {

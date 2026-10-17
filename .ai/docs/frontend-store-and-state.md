@@ -8,11 +8,7 @@
 
 Файл: `services/slices/headerSlice.ts`
 
-| State field |
-| :---------- |
-| `fullName` |
-| `role` |
-| `description` |
+_Поля initialState не обнаружены._
 
 ### Slice `periods`
 
@@ -21,8 +17,10 @@
 | State field |
 | :---------- |
 | `pageTitle` |
-| `currentPeriod` |
+| `currentPeriodId` |
 | `periods` |
+| `isLoading` |
+| `error` |
 
 ## Thunks
 
@@ -30,4 +28,10 @@ _Thunks не найдены._
 
 ## Selectors
 
-_Селекторы не найдены._
+| Selector | File |
+| :------- | :--- |
+| `isUUID` | `services/api/getEvents.ts` |
+| `fetchData` | `services/api/getEvents.ts` |
+| `getPeriodById` | `services/slices/utils.ts` |
+| `getPeriodIndexById` | `services/slices/utils.ts` |
+| `applyPeriods` | `services/slices/utils.ts` |

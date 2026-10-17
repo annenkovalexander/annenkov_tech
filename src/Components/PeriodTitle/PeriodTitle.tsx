@@ -3,7 +3,9 @@ import { getPeriodTitle } from "../../../src/services/slices/periodsSlice"
 import { useSelector } from "../../../src/services/store"
 import PeriodTitleUI from "../ui/PeriodTitleUI/PeriodTitleUI";
 
-const PeriodTitle = forwardRef<HTMLDivElement, {}>((props, ref) => {
+type PeriodTitleProps = object;
+
+const PeriodTitle = forwardRef<HTMLDivElement, PeriodTitleProps>((_, ref) => {
     const periodTitle = useSelector(getPeriodTitle);
     return (
         <PeriodTitleUI ref={ref} periodTitle={periodTitle} />

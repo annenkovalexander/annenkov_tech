@@ -1,37 +1,35 @@
 import { memo } from 'react';
 import clsx from 'clsx';
-import styles from './PaginationUI.module.scss';
+import styles from './PeriodNavigationUI.module.scss';
+import type { UUID } from '../../../types/period';
 
-type PaginationItem = {
-    id: string;
-};
-
-interface PaginationUIProps {
-    paginationItems: PaginationItem[];
+interface PeriodNavigationProps {
+    periodIds: UUID[];
     activePeriodIndex: number;
-    onPeriodClick: React.MouseEventHandler<HTMLButtonElement>;
+    ariaLabelLocalized: string;
+    onPeriodClick: (periodId: UUID) => void;
 }
 
-const PaginationUI = ({
-    paginationItems,
+const PeriodNavigationUI = ({
+    periodIds,
     activePeriodIndex,
     onPeriodClick,
-}: PaginationUIProps) => (
+    ariaLabelLocalized,
+}: PeriodNavigationProps) => (
     <nav className={styles.container} aria-label="Навигация по периодам">
-        {paginationItems.map((item, index) => {
+        {periodIds.map((periodId, index) => {
             const isActive = index === activePeriodIndex;
 
             return (
                 <button
-                    key={item.id}
+                    key={periodId}
                     type="button"
-                    data-period-id={item.id}
                     className={clsx(
                         styles.bulletButton,
                         isActive && styles.activeBullet,
                     )}
-                    onClick={onPeriodClick}
-                    aria-label={`Перейти к периоду ${index + 1}`}
+                    onClick={() => onPeriodClick(periodId)}
+                    aria-label={`${ariaLabelLocalized} ${index + 1}`}
                     aria-current={isActive ? 'true' : undefined}
                 />
             );
@@ -39,4 +37,4 @@ const PaginationUI = ({
     </nav>
 );
 
-export default memo(PaginationUI);
+export default memo(PeriodNavigationUI);

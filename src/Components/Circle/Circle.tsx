@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import CircleUI from '../ui/CircleUI/CircleUI';
 import DotUI from '../ui/DotUI/DotUI';
 import { useDispatch, useSelector } from '../../../src/services/store';
@@ -22,9 +22,10 @@ import {
     getPercentageByDotIndex,
     DOT_CONFIG,
 } from './utils';
+import { getCirclePath } from '../ui/CircleUI/utils';
 import type { RefElement } from './utils';
 import { useViewport } from '../../services/hooks/useViewport';
-import type { UUID } from '../../services/api/getEvents';
+import type { UUID } from '../../types/period';
 import styles from './Circle.module.scss';
 
 gsap.registerPlugin(useGSAP);
@@ -46,19 +47,10 @@ const Circle: React.FC = () => {
     const dotRefsRef = useRef<RefElement<HTMLDivElement>[]>([]);
     const dotPositionsRef = useRef<Map<UUID, number>>(new Map());
 
-    const startAngle = -(60 * Math.PI) / 180;
-
-    const startX = circleRadius + circleRadius * Math.cos(startAngle);
-    const startY = circleRadius + circleRadius * Math.sin(startAngle);
-
-    const oppositeX = circleRadius - circleRadius * Math.cos(startAngle);
-    const oppositeY = circleRadius - circleRadius * Math.sin(startAngle);
-
-    const circlePathD = `
-        M ${startX} ${startY}
-        A ${circleRadius} ${circleRadius} 0 1 1 ${oppositeX} ${oppositeY}
-        A ${circleRadius} ${circleRadius} 0 1 1 ${startX} ${startY}
-    `;
+    const circlePathD = useMemo(
+        () => getCirclePath(circleRadius),
+        [circleRadius],
+    );
 
     const { contextSafe } = useGSAP(
         () => {
@@ -111,7 +103,8 @@ const Circle: React.FC = () => {
                 gsap.killTweensOf(dotRef.element);
 
                 gsap.set(dotRef.element, {
-                    clearProps: 'all',
+                    xPercent: -50,
+                    yPercent: -50,
                 });
 
                 gsap.set(dotRef.element, {
@@ -141,7 +134,7 @@ const Circle: React.FC = () => {
                 clearTimeout(timeout);
             }
         };
-    }, [viewPort.width, periods]);
+    }, [circlePathD, periods]);
 
     const animateToPeriod = useCallback(
         (targetPeriodId: UUID) => {
@@ -249,7 +242,6 @@ const Circle: React.FC = () => {
             const existingIndex = dotRefsRef.current.findIndex(
                 (dotRef) => dotRef.periodId === periodId,
             );
-
             if (element) {
                 if (existingIndex === -1) {
                     dotRefsRef.current.push({
@@ -259,10 +251,8 @@ const Circle: React.FC = () => {
                 } else {
                     dotRefsRef.current[existingIndex].element = element;
                 }
-
                 return;
             }
-
             if (existingIndex !== -1) {
                 dotRefsRef.current.splice(existingIndex, 1);
             }
@@ -288,31 +278,25 @@ const Circle: React.FC = () => {
                 x2={viewPort.width}
                 y2={circleRadius}
             />
-
             <SvgVerticalLineUI
                 x1={circleRadius}
                 y1={-viewPort.width}
-                x2={circleRadius}
                 y2={viewPort.width}
             />
-
             <CircleUI
                 ref={pathRef}
                 radius={circleRadius}
                 pathD={circlePathD}
             />
-
             {periods.map((period) => (
                 <DotUI
                     ref={addDotRef(period.id)}
                     key={period.id}
                     text={period.category}
                     dotRadius={DOT_CONFIG.DOT_RADIUS}
-                    dotDiameter={DOT_CONFIG.DOT_RADIUS * 2}
                     circleRadius={DOT_CONFIG.CIRCLE_RADIUS}
-                    circleDiameter={DOT_CONFIG.CIRCLE_RADIUS * 2}
                     strokeWidth={DOT_CONFIG.STROKE_WIDTH}
-                    period={period}
+                    periodText={period.periodText}
                     isActive={currentPeriod === period.id}
                     onClick={handleDotClick(period.id)}
                 />

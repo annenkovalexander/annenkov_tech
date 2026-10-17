@@ -1,4 +1,4 @@
-import type { UUID } from "crypto";
+import type { UUID } from "../../types/period";
 import type { Viewport } from "../../services/hooks/useViewport";
 
 

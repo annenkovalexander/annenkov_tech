@@ -1,12 +1,12 @@
 export const getYearList = (year: number, yearOld: number): number[] => {
-    let resultList: number[] = [];
-    let step = 1;
-    if (year < yearOld) {
-        step = -1;
+    if (!Number.isInteger(year) || !Number.isInteger(yearOld)) {
+        return [];
     }
-    resultList = Array.from(
-        {length: (year - yearOld) / step + 1}, 
-        (_, i) => yearOld + i * step
+    const step = year < yearOld ? -1 : 1;
+    return Array.from(
+        {
+            length: Math.abs(year - yearOld) + 1
+        }, 
+        (_, index) => yearOld + index * step
     );
-    return resultList;
 }
