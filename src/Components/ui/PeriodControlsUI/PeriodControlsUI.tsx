@@ -34,9 +34,7 @@ const PeriodControlsUI = ({
                     disabled={!buttonsActive.prevEnabled}
                     onClick={onPrev}
                     aria-label="Предыдущий период"
-                >
-                    {'<'}
-                </button>
+                />
                 <button
                     type="button"
                     className={clsx(
@@ -47,9 +45,7 @@ const PeriodControlsUI = ({
                     disabled={!buttonsActive.nextEnabled}
                     onClick={onNext}
                     aria-label="Следующий период"
-                >
-                    {'>'}
-                </button>
+                />
             </div>
         </div>
     </div>

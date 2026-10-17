@@ -22,23 +22,29 @@ const DotUI = forwardRef<HTMLDivElement, DotUIProps>(({
     onClick,
 }, ref) => {
     const containerDiameter = circleRadius * 2 + strokeWidth;
-
     const dotOffset = (containerDiameter - dotRadius * 2) / 2;
     const circleOffset = strokeWidth / 2;
 
     return (
         <div
             ref={ref}
-            className={styles.container}
+            className={clsx(
+                styles.container,
+                isActive && styles.circleContainerVisible,
+            )}
         >
-            <div
+            <button
+                type="button"
                 className={styles.dotContainer}
-                aria-hidden="true"
+                onClick={onClick}
+                aria-label={text}
             >
                 <svg
+                    className={styles.dotVisual}
                     width={containerDiameter}
                     height={containerDiameter}
                     viewBox={`0 0 ${containerDiameter} ${containerDiameter}`}
+                    aria-hidden="true"
                 >
                     <circle
                         cx={dotOffset + dotRadius}
@@ -47,21 +53,13 @@ const DotUI = forwardRef<HTMLDivElement, DotUIProps>(({
                         strokeWidth={strokeWidth}
                     />
                 </svg>
-            </div>
 
-            <button
-                type="button"
-                className={clsx(
-                    styles.circleContainer,
-                    isActive && styles.circleContainerVisible,
-                )}
-                onClick={onClick}
-                aria-label={text}
-            >
                 <svg
+                    className={styles.circleVisual}
                     width={containerDiameter + strokeWidth}
                     height={containerDiameter + strokeWidth}
                     viewBox={`0 0 ${containerDiameter + strokeWidth} ${containerDiameter + strokeWidth}`}
+                    aria-hidden="true"
                 >
                     <circle
                         cx={circleOffset + circleRadius}
@@ -75,7 +73,6 @@ const DotUI = forwardRef<HTMLDivElement, DotUIProps>(({
                 <p className={styles.periodText}>{text}</p>
             </button>
         </div>
-
     );
 });
 

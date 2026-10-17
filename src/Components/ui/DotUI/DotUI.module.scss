@@ -1,87 +1,92 @@
 .container {
+    --circle-dot-fill: white;
     --stroke-dot-color: #42567a;
     --stroke-dot-fill: #42567a;
-    --circle-dot-fill: white;
-
-    position: absolute;
-    top: var(--dot-top, 0px);
-    left: var(--dot-left, 0px);
-    z-index: 6;
-}
-
-.dotContainer,
-.circleContainer {
     position: absolute;
     top: 0;
     left: 0;
-    padding: 0;
-    border: none;
-    transform: translate(-50%, -50%);
-    background: transparent;
-    color: #42567a;
-    -webkit-appearance: none;
-    appearance: none;
-    cursor: pointer;
+    width: 0;
+    height: 0;
+    z-index: 6;
 }
 
 .dotContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--stroke-dot-color);
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.dotVisual {
+    visibility: visible;
     fill: var(--stroke-dot-fill);
     stroke: var(--stroke-dot-color);
 }
 
-.circleContainer {
+.circleVisual {
+    position: absolute;
     visibility: hidden;
     fill: var(--circle-dot-fill);
     stroke: var(--stroke-dot-color);
 }
 
-.circleContainerVisible {
-    visibility: visible;
-}
-
 .periodNumber,
 .periodText {
+    position: absolute;
+    visibility: hidden;
+    margin: 0;
     transform: translateZ(0);
     backface-visibility: hidden;
+    font-family: 'PT Sans', Arial, Helvetica, sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 30px;
 }
 
 .periodNumber {
-    position: absolute;
     top: 13px;
     left: 21px;
-    margin: 0;
-    font-family: 'PT Sans', Arial, Helvetica, sans-serif;
-    font-size: 20px;
-    font-weight: 400;
-    line-height: 30px;
+    font-weight: 300;
 }
 
 .periodText {
-    position: absolute;
     top: 13px;
     left: calc(28px * 2 + 20px);
-    visibility: hidden;
-    margin: 0;
-    font-family: 'PT Sans', Arial, Helvetica, sans-serif;
-    font-size: 20px;
     font-weight: 700;
-    line-height: 30px;
 }
 
-.circleContainerVisible .periodText {
-    visibility: visible;
-}
-
-@media (hover: hover) and (pointer: fine) {
-    .container:hover .dotContainer {
+.circleContainerVisible {
+    .dotVisual {
         visibility: hidden;
     }
 
-    .container:hover .circleContainer,
-    .container:hover .periodText {
+    .circleVisual,
+    .periodNumber,
+    .periodText {
         visibility: visible;
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .container:hover {
+        .dotVisual {
+            visibility: hidden;
+        }
+
+        .circleVisual,
+        .periodNumber,
+        .periodText {
+            visibility: visible;
+        }
     }
 }
