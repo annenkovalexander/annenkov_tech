@@ -50,13 +50,30 @@ const EventCardList = forwardRef<HTMLDivElement, EventCardListProps>(
             [isMobile],
         );
 
-        if (eventsList.length === 0 && !isLoading && !isError) {
+        if (isLoading) {
             return (
-                <div ref={ref} className={styles.container}>
+                <div ref={ref} className={clsx(styles.container, isMobile && styles.mobile)}>
+                    <p className={styles.loadingMessage}> </p>
+                </div>
+            );
+        }
+
+        if (isError) {
+            return (
+                <div ref={ref} className={clsx(styles.container, isMobile && styles.mobile)}>
+                    <p className={styles.errorMessage}>Произошла ошибка при загрузке событий</p>
+                </div>
+            );
+        }
+
+        if (eventsList.length === 0) {
+            return (
+                <div ref={ref} className={clsx(styles.container, isMobile && styles.mobile)}>
                     <p className={styles.emptyMessage}>Событий не найдено</p>
                 </div>
             );
         }
+
         return (
             <div ref={ref} className={clsx(styles.container, isMobile && styles.mobile)}>
                 {leftButtonVisible && <button
@@ -94,7 +111,8 @@ const EventCardList = forwardRef<HTMLDivElement, EventCardListProps>(
                     />
                 )}
             </div>
-        )}
+        );
+    }
 );
 
 EventCardList.displayName = 'EventCardList';

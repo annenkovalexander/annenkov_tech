@@ -22,8 +22,8 @@ const DotUI = forwardRef<HTMLDivElement, DotUIProps>(({
     onClick,
 }, ref) => {
     const containerDiameter = circleRadius * 2 + strokeWidth;
-    const dotOffset = (containerDiameter - dotRadius * 2) / 2;
-    const circleOffset = strokeWidth / 2;
+    const dotCenter = containerDiameter / 2;
+    const circleCenter = (containerDiameter + strokeWidth) / 2;
 
     return (
         <div
@@ -47,8 +47,8 @@ const DotUI = forwardRef<HTMLDivElement, DotUIProps>(({
                     aria-hidden="true"
                 >
                     <circle
-                        cx={dotOffset + dotRadius}
-                        cy={dotOffset + dotRadius}
+                        cx={dotCenter}
+                        cy={dotCenter}
                         r={dotRadius}
                         strokeWidth={strokeWidth}
                     />
@@ -62,15 +62,15 @@ const DotUI = forwardRef<HTMLDivElement, DotUIProps>(({
                     aria-hidden="true"
                 >
                     <circle
-                        cx={circleOffset + circleRadius}
-                        cy={circleOffset + circleRadius}
+                        cx={circleCenter}
+                        cy={circleCenter}
                         r={circleRadius}
                         strokeWidth={strokeWidth}
                     />
                 </svg>
 
-                <p className={styles.periodNumber}>{periodText}</p>
-                <p className={styles.periodText}>{text}</p>
+                <span className={styles.periodNumber}>{periodText}</span>
+                <span className={styles.periodText}>{text}</span>
             </button>
         </div>
     );

@@ -6,7 +6,8 @@ import type { UUID } from '../../../types/period';
 interface PeriodNavigationProps {
     periodIds: UUID[];
     activePeriodIndex: number;
-    ariaLabelLocalized: string;
+    containerAriaLabel: string;
+    bulletAriaLabelFn?: (index: number) => string;
     onPeriodClick: (periodId: UUID) => void;
 }
 
@@ -14,12 +15,12 @@ const PeriodNavigationUI = ({
     periodIds,
     activePeriodIndex,
     onPeriodClick,
-    ariaLabelLocalized,
+    containerAriaLabel,
+    bulletAriaLabelFn = () => '',
 }: PeriodNavigationProps) => (
-    <nav className={styles.container} aria-label="Навигация по периодам">
+    <nav className={styles.container} aria-label={containerAriaLabel}>
         {periodIds.map((periodId, index) => {
             const isActive = index === activePeriodIndex;
-
             return (
                 <button
                     key={periodId}
@@ -29,7 +30,7 @@ const PeriodNavigationUI = ({
                         isActive && styles.activeBullet,
                     )}
                     onClick={() => onPeriodClick(periodId)}
-                    aria-label={`${ariaLabelLocalized} ${index + 1}`}
+                    aria-label={bulletAriaLabelFn(index + 1)}
                     aria-current={isActive ? 'true' : undefined}
                 />
             );

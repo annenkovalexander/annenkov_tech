@@ -3,13 +3,19 @@ const DEFAULT_START_ANGLE = 30;
 const normalizeAngle = (angle: number): number =>
     ((angle % 360) + 360) % 360;
 
-export const getCirclePath = (circleRadius: number): string => {
+const START_ANGLE_DEGREES = (() => {
     const parsedStartAngle = Number(process.env.START_ANGLE);
-    const startAngleDegrees = Number.isNaN(parsedStartAngle)
+    return Number.isNaN(parsedStartAngle)
         ? DEFAULT_START_ANGLE
         : normalizeAngle(parsedStartAngle);
+})();
 
-    const startAngle = -(startAngleDegrees * Math.PI) / 180;
+export const getCirclePath = (circleRadius: number): string => {
+    if (circleRadius <= 0) {
+        return '';
+    }
+
+    const startAngle = -(START_ANGLE_DEGREES * Math.PI) / 180;
 
     const startX = circleRadius + circleRadius * Math.cos(startAngle);
     const startY = circleRadius + circleRadius * Math.sin(startAngle);

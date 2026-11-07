@@ -16,7 +16,9 @@ export const applyPeriods = (
 ) => {
     state.periods = [...payload];
 
-    if (state.currentPeriodId === '' && payload.length > 0) {
+    const isCurrentPeriodValid = state.periods.some((period) => period.id === state.currentPeriodId);
+
+    if (!isCurrentPeriodValid && payload.length > 0) {
         state.currentPeriodId = state.periods[0].id;
     }
 };

@@ -2,10 +2,8 @@
 
 import fs from 'fs';
 import path from 'path';
-import { Logger } from 'sass';
 
-const SRC_ROOT = path.resolve(process.cwd(), 'src');
-const API_FILE = path.join(SRC_ROOT, 'api', '');
+const SRC_ROOT = path.resolve(process.cwd(), 'src/services/api');
 const OUTPUT_FILE = path.resolve(
   process.cwd(),
   'data/shared/.ai/docs/frontend-api-endpoints.md',
@@ -22,7 +20,6 @@ function parseApiFile(filePath) {
   }
 
   const source = fs.readFileSync(filePath, 'utf-8');
-
   const endpoints = [];
 
   // 1) export const fn = async (...) => { ... fetch('/api/...', { method: ... }) ... };
@@ -55,6 +52,7 @@ function parseApiFile(filePath) {
         path: rawPath,
         name: fnName,
         source: 'fetch',
+        file: path.relative(process.cwd(), filePath),
       });
     }
   }
@@ -86,6 +84,7 @@ function parseApiFile(filePath) {
         path: rawPath,
         name: 'updateProfileApi',
         source: 'fetch',
+        file: path.relative(process.cwd(), filePath),
       });
     }
   }
@@ -94,34 +93,60 @@ function parseApiFile(filePath) {
 }
 
 /**
+ * Рекурсивный обход всех .ts файлов в папке
+ */
+function getAllTsFiles(dir) {
+  const results = [];
+
+  if (!fs.existsSync(dir)) {
+    throw new Error(`API folder not found: ${dir}`);
+  }
+
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+
+    if (entry.isDirectory()) {
+      results.push(...getAllTsFiles(fullPath));
+    } else if (entry.isFile() && entry.name.endsWith('.ts')) {
+      results.push(fullPath);
+    }
+  }
+
+  return results;
+}
+
+/**
  * Генерация markdown строго на основе найденных фрагментов кода.
  */
-function generateMarkdown(endpoints) {
+function generateMarkdown(allEndpoints) {
   const lines = [];
 
   lines.push('# Frontend API Endpoints');
   lines.push('');
   lines.push(
-    `Этот файл сгенерирован автоматически из ${API_FILE}. Он перечисляет HTTP-эндпоинты и определения, которые используются фронтендом для работы с backend API.`,
+    `Этот файл сгенерирован автоматически из всех .ts файлов в ${SRC_ROOT}. Он перечисляет HTTP-эндпоинты и определения, которые используются фронтендом для работы с backend API.`,
   );
   lines.push('');
 
-  if (endpoints.length === 0) {
-    lines.push('_Эндпоинты не найдены в исходном файле._');
+  if (allEndpoints.length === 0) {
+    lines.push('_Эндпоинты не найдены в исходных файлах._');
     return lines.join('\n');
   }
 
-  lines.push('| Function | Method | Path | Source |');
-  lines.push('| :------- | :----- | :--- | :----- |');
+  lines.push('| File | Function | Method | Path | Source |');
+  lines.push('| :--- | :------- | :----- | :--- | :----- |');
 
-  for (const ep of endpoints) {
+  for (const ep of allEndpoints) {
+    const file = ep.file ? `\`${ep.file}\`` : '';
     const fn = ep.name ? `\`${ep.name}\`` : '';
     const method = ep.method ? `\`${ep.method}\`` : '';
     const pathStr = ep.path ? `\`${ep.path}\`` : '';
     const sourceStr = ep.source ? `\`${ep.source}\`` : '';
 
     lines.push(
-      `| ${fn} | ${method} | ${pathStr} | ${sourceStr} |`,
+      `| ${file} | ${fn} | ${method} | ${pathStr} | ${sourceStr} |`,
     );
   }
 
@@ -134,20 +159,35 @@ function generateMarkdown(endpoints) {
  * Основной запуск
  */
 function main() {
-  let endpoints;
+  let allEndpoints = [];
+
   try {
-    endpoints = parseApiFile(API_FILE);
+    const tsFiles = getAllTsFiles(SRC_ROOT);
+
+    if (tsFiles.length === 0) {
+      console.warn(`No .ts files found in ${SRC_ROOT}`);
+    }
+
+    for (const filePath of tsFiles) {
+      try {
+        const endpoints = parseApiFile(filePath);
+        allEndpoints.push(...endpoints);
+      } catch (e) {
+        console.warn(`Skipping file ${filePath}: ${e.message}`);
+      }
+    }
+
+    console.log(`Parsed ${tsFiles.length} files, found ${allEndpoints.length} endpoints`);
+  } catch (e) {
+    console.error(`Error: ${e.message}`);
   }
-  catch(e) {
-    endpoints = '';
-    console.log(`Возникла ошибка: ${e}`);
-  }
-  finally {
-    const markdown = generateMarkdown(endpoints);
-    const outDir = path.dirname(OUTPUT_FILE);
-    fs.mkdirSync(outDir, { recursive: true });
-    fs.writeFileSync(OUTPUT_FILE, markdown, 'utf-8');
-  }
+
+  const markdown = generateMarkdown(allEndpoints);
+  const outDir = path.dirname(OUTPUT_FILE);
+  fs.mkdirSync(outDir, { recursive: true });
+  fs.writeFileSync(OUTPUT_FILE, markdown, 'utf-8');
+
+  console.log(`Report generated: ${OUTPUT_FILE}`);
 }
 
 main();
