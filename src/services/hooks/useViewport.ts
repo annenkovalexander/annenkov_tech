@@ -3,10 +3,17 @@ import { useEffect, useState, useRef } from "react";
 export type Viewport = {
     width: number
 };
-const parsedDefaultWidth = Number(process.env.DEFAULT_DESKTOP_WIDTH);
-const DEFAULT_DESKTOP_WIDTH = Number.isFinite(parsedDefaultWidth)
-    ? parsedDefaultWidth
-    : 1440;
+
+const DEFAULT_DESKTOP_WIDTH = (() => {
+  if (typeof process !== 'undefined' && process.env?.DEFAULT_DESKTOP_WIDTH) {
+    const parsed = Number(process.env.DEFAULT_DESKTOP_WIDTH);
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+  return 1440;
+})();
+
 export function useViewport() {
   const [viewport, setViewport] = useState<Viewport>({
     width: DEFAULT_DESKTOP_WIDTH,
@@ -25,7 +32,9 @@ export function useViewport() {
       lastWidthRef.current = newWidth;
       setViewport({ width: newWidth });
     };
+
     handleResize();
+
     // Используем visualViewport для более стабильных значений
     const visualViewport = window.visualViewport;
     if (visualViewport) {
@@ -33,6 +42,7 @@ export function useViewport() {
     } else {
       window.addEventListener('resize', handleResize);
     }
+
     return () => {
       if (visualViewport) {
         visualViewport.removeEventListener('resize', handleResize);

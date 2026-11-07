@@ -156,11 +156,12 @@ const App = () => {
             <div className={styles.loader} />
           }
         >
-          <EventCardList
-            ref={isMobile ? eventsCardsListRef : null}
-            isMobile={isMobile}
-            eventsList={eventsList}
-          />
+          <div ref={isMobile ? eventsCardsListRef : null}>
+            <EventCardList
+              isMobile={isMobile}
+              eventsList={eventsList}
+            />
+          </div>
         </Suspense>
         {isMobile && toBeDisplayed && (<PeriodControls isMobile={isMobile} periods={periods}/>)}
       </div>

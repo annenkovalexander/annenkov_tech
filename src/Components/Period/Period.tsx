@@ -19,8 +19,8 @@ const Period = ({
     const previousYearStart = usePrevious(yearsData?.startYear);
     const previousYearEnd = usePrevious(yearsData?.endYear);
     const currentYear = new Date().getFullYear();
-    const startYear = yearsData && yearsData.startYear ? yearsData.startYear : currentYear;
-    const endYear = yearsData && yearsData.endYear ? yearsData.endYear : currentYear;
+    const startYear = yearsData?.startYear ?? currentYear;
+    const endYear = yearsData?.endYear ?? currentYear;
     const yearsListStartYear = useMemo(
         () => getYearList(startYear, previousYearStart ?? currentYear),
         [startYear, previousYearStart, currentYear],

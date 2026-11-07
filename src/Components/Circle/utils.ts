@@ -40,7 +40,7 @@ export const getCenterY = (viewport: Viewport): number => {
 
 
 export const getPercentageByDotIndex = (dotIndex: number, dotsLength: number): number => 
-    dotIndex / dotsLength;
+    dotsLength === 0 ? 0 : dotIndex / dotsLength;
 
 
 export const getCircleRadius = (viewport: Viewport): number => {
@@ -75,6 +75,10 @@ export const getNewPositions = (
 ): Map<UUID, number> => {
     const nextPositions = new Map<UUID, number>();
 
+    if (periodsLength <= 0) {
+        return new Map(currentPositions);
+    }
+
     currentPositions.forEach((position, periodId) => {
         const nextPosition =
             (((position + delta) % periodsLength) + periodsLength) %
@@ -92,6 +96,10 @@ export const getDotCoordinates = (
     dotIndex: number, 
     radius: number
 ): { x: number; y: number } => {
+    if (dotsNumber === 0) {
+        return { x: radius, y: radius };
+    }
+
     const position = dotIndex / dotsNumber;
     const angle = position * 2 * Math.PI;
     

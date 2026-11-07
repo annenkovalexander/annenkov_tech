@@ -7,10 +7,12 @@ const HeaderUI = ({ fullName, role, description, tg_link, tg_link_aria_label }: 
     <header className={styles.header}>
         <div className={styles.content}>
             <h1 className={styles.title}>
-                {tg_link_aria_label && isTelegramLink(tg_link) && (
+                {tg_link_aria_label && isTelegramLink(tg_link) ? (
                     <a href={tg_link} aria-label={tg_link_aria_label}>
                         {fullName}
                     </a>
+                ) : (
+                    fullName
                 )}
             </h1>
             <p className={styles.role}>{role}</p>
