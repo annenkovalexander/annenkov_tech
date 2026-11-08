@@ -37,7 +37,6 @@ const DotUI = forwardRef<HTMLDivElement, DotUIProps>(({
                 type="button"
                 className={styles.dotContainer}
                 onClick={onClick}
-                aria-label={text}
             >
                 <svg
                     className={styles.dotVisual}

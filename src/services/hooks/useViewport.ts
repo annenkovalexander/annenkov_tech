@@ -15,10 +15,18 @@ const DEFAULT_DESKTOP_WIDTH = (() => {
 })();
 
 export function useViewport() {
-  const [viewport, setViewport] = useState<Viewport>({
-    width: DEFAULT_DESKTOP_WIDTH,
-  });
-  const lastWidthRef = useRef(DEFAULT_DESKTOP_WIDTH);
+  const getInitialWidth = () => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth;
+    }
+    return DEFAULT_DESKTOP_WIDTH;
+  };
+
+  const [viewport, setViewport] = useState<Viewport>(() => ({
+    width: getInitialWidth(),
+  }));
+  
+  const lastWidthRef = useRef(getInitialWidth());
 
   useEffect(() => {
     const handleResize = () => {
