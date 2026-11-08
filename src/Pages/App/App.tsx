@@ -55,8 +55,6 @@ const App = () => {
   const isLoading = useSelector(getIsLoading);
   const error = useSelector(getError);
 
-  const toBeDisplayed = !error && eventsList.length > 0;
-
   useEffect(() => {
     dispatch(loadPeriods(INITIAL_DELAY));
   }, [dispatch]);
@@ -150,7 +148,7 @@ const App = () => {
             : styles.sliderLayoutDesktop
         )}
       >
-        {!isMobile && toBeDisplayed && (<PeriodControls isMobile={isMobile} periods={periods}/>)}
+        {!isMobile && <PeriodControls isMobile={isMobile} periods={periods}/>}
         <Suspense
           fallback={
             <div className={styles.loader} />
@@ -160,10 +158,12 @@ const App = () => {
             <EventCardList
               isMobile={isMobile}
               eventsList={eventsList}
+              isError={!!error}
+              isLoading={isLoading}
             />
           </div>
         </Suspense>
-        {isMobile && toBeDisplayed && (<PeriodControls isMobile={isMobile} periods={periods}/>)}
+        {isMobile && <PeriodControls isMobile={isMobile} periods={periods}/>}
       </div>
       
     </div>

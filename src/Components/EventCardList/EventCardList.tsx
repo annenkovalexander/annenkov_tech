@@ -1,19 +1,18 @@
 import EventCardUI from "../ui/EventCardUI/EventCardUI";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Swiper as SwiperType } from 'swiper';
-import { Navigation } from 'swiper/modules';
 import styles from './EventCardList.module.scss';
 import "swiper/css";
 import "swiper/css/pagination";
-import { forwardRef, useCallback, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import type { Event } from "../../types/period";
-import { useSelector } from "../../services/store";
-import { getError, getIsLoading } from "../../services/slices/periodsSlice";
 
 interface EventCardListProps {
     isMobile: boolean;
     eventsList: Event[];
+    isLoading: boolean;
+    isError: boolean;
 }
 
 const SWIPER_BREAKPOINTS = {
@@ -35,11 +34,11 @@ const EventCardList = forwardRef<HTMLDivElement, EventCardListProps>(
     ({
         isMobile,
         eventsList,
+        isLoading,
+        isError,
     }, ref) => {
         const [leftButtonVisible, setLeftButtonVisible] = useState(false);
         const [rightButtonVisible, setRightButtonVisible] = useState(false);
-        const isLoading = useSelector(getIsLoading);
-        const isError = useSelector(getError);
         const swiperRef = useRef<SwiperType>();
 
         const updateNavigation = useCallback(
@@ -49,6 +48,12 @@ const EventCardList = forwardRef<HTMLDivElement, EventCardListProps>(
             },
             [isMobile],
         );
+
+        useEffect(() => {
+            if (swiperRef.current) {
+                updateNavigation(swiperRef.current);
+            }
+        }, [isMobile, updateNavigation]);
 
         if (isLoading) {
             return (

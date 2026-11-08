@@ -86,16 +86,15 @@ const Circle: React.FC = () => {
 
         const periodsLength = periods.length;
 
+        // Improvement I-001: O(N) complexity by using a map instead of findIndex in a loop
+        const periodToIndexMap = new Map(periods.map((p, i) => [p.id, i]));
+
 
         dotRefsRef.current.forEach((dotRef) => {
-            // Фикс: вычисляем позицию напрямую из periods,
-            // а не из dotPositionsRef (который пуст на первом рендере)
-            const position = periods.findIndex(
-                (period) => period.id === dotRef.periodId
-            );
+            const position = periodToIndexMap.get(dotRef.periodId);
 
 
-            if (position === -1) {
+            if (position === undefined) {
                 return;
             }
 
@@ -162,9 +161,18 @@ const Circle: React.FC = () => {
                 periodsLength,
             );
 
+            // Finding F-001: Synchronize position map immediately before animations start
+            // to prevent race conditions during concurrent animation triggers.
+            const previousPositions = new Map(dotPositionsRef.current);
+
+            nextPositions.forEach((pos, id) => {
+                dotPositionsRef.current.set(id, pos);
+            });
+            dotPositionsRef.current.set(targetPeriodId, 0);
+
 
             dotRefsRef.current.forEach((dotRef) => {
-                const currentPosition = dotPositionsRef.current.get(
+                const currentPosition = previousPositions.get(
                     dotRef.periodId,
                 );
 
@@ -172,9 +180,6 @@ const Circle: React.FC = () => {
                 if (currentPosition === undefined) {
                     return;
                 }
-
-
-                const isTargetPeriod = dotRef.periodId === targetPeriodId;
 
 
                 gsap.killTweensOf(dotRef.element);
@@ -198,19 +203,6 @@ const Circle: React.FC = () => {
                                 currentPosition + delta,
                                 periodsLength,
                             ),
-                        },
-                        onStart: () => {
-                            const nextPosition = isTargetPeriod
-                                ? 0
-                                : nextPositions.get(dotRef.periodId);
-
-
-                            if (nextPosition !== undefined) {
-                                dotPositionsRef.current.set(
-                                    dotRef.periodId,
-                                    nextPosition,
-                                );
-                            }
                         },
                     });
                 });
