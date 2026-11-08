@@ -1,4 +1,4 @@
-import type { Period } from "../../services/api/getEvents";
+import type { Period } from "../../types/period";
 
 
 export type PeriodButtonsEnabled = {
