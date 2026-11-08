@@ -6,7 +6,7 @@ import type { Period, UUID } from '../../types/period';
 
 export interface AppState {
     pageTitle: string;
-    currentPeriodId: UUID | '' | undefined;
+    currentPeriodId: UUID | '';
     periods: Period[];
     isLoading: boolean;
     error: string;
