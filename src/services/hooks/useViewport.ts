@@ -15,24 +15,18 @@ const DEFAULT_DESKTOP_WIDTH = (() => {
 })();
 
 export function useViewport() {
-  const getInitialWidth = () => {
-    if (typeof window !== 'undefined') {
-      return window.innerWidth;
-    }
-    return DEFAULT_DESKTOP_WIDTH;
-  };
-
-  const [viewport, setViewport] = useState<Viewport>(() => ({
-    width: getInitialWidth(),
-  }));
+  // Initialize with a constant value to prevent hydration mismatch between server and client.
+  // The actual window width will be set in useEffect.
+  const [viewport, setViewport] = useState<Viewport>({
+    width: DEFAULT_DESKTOP_WIDTH,
+  });
   
-  const lastWidthRef = useRef(getInitialWidth());
+  const lastWidthRef = useRef(DEFAULT_DESKTOP_WIDTH);
 
   useEffect(() => {
     const handleResize = () => {
       const newWidth = window.innerWidth;
       // Обновляем только если изменилась ширина
-      // Игнорируем изменения высоты на мобильных
       if (newWidth === lastWidthRef.current) {
         return;
       }
@@ -41,9 +35,9 @@ export function useViewport() {
       setViewport({ width: newWidth });
     };
 
+    // Set initial client-side width immediately on mount to synchronize state with reality
     handleResize();
 
-    // Используем visualViewport для более стабильных значений
     const visualViewport = window.visualViewport;
     if (visualViewport) {
       visualViewport.addEventListener('resize', handleResize);

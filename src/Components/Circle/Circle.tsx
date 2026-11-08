@@ -23,7 +23,6 @@ import {
     DOT_CONFIG,
 } from './utils';
 import { getCirclePath } from '../ui/CircleUI/utils';
-import type { RefElement } from './utils';
 import { useViewport } from '../../services/hooks/useViewport';
 import type { UUID } from '../../types/period';
 import styles from './Circle.module.scss';
@@ -49,7 +48,7 @@ const Circle: React.FC = () => {
     const pathRef = useRef<SVGPathElement | null>(null);
 
 
-    const dotRefsRef = useRef<RefElement<HTMLDivElement>[]>([]);
+    const dotRefsRef = useRef<Map<UUID, HTMLDivElement>>(new Map());
     const dotPositionsRef = useRef<Map<UUID, number>>(new Map());
 
 
@@ -70,7 +69,9 @@ const Circle: React.FC = () => {
 
     useEffect(() => {
         periods.forEach((period, index) => {
-            dotPositionsRef.current.set(period.id, index);
+            if (!dotPositionsRef.current.has(period.id)) {
+                dotPositionsRef.current.set(period.id, index);
+            }
         });
     }, [periods]);
 
@@ -78,21 +79,17 @@ const Circle: React.FC = () => {
     useLayoutEffect(() => {
         const path = pathRef.current;
 
-
-        if (!path || dotRefsRef.current.length !== periods.length) {
+        if (!path) {
             return;
         }
 
 
         const periodsLength = periods.length;
-
-        // Improvement I-001: O(N) complexity by using a map instead of findIndex in a loop
         const periodToIndexMap = new Map(periods.map((p, i) => [p.id, i]));
 
 
-        dotRefsRef.current.forEach((dotRef) => {
-            const position = periodToIndexMap.get(dotRef.periodId);
-
+        dotRefsRef.current.forEach((element, periodId) => {
+            const position = periodToIndexMap.get(periodId);
 
             if (position === undefined) {
                 return;
@@ -105,16 +102,16 @@ const Circle: React.FC = () => {
             );
 
 
-            gsap.killTweensOf(dotRef.element);
+            gsap.killTweensOf(element);
 
 
-            gsap.set(dotRef.element, {
+            gsap.set(element, {
                 xPercent: -50,
                 yPercent: -50,
             });
 
 
-            gsap.set(dotRef.element, {
+            gsap.set(element, {
                 motionPath: {
                     path,
                     align: path,
@@ -161,8 +158,6 @@ const Circle: React.FC = () => {
                 periodsLength,
             );
 
-            // Finding F-001: Synchronize position map immediately before animations start
-            // to prevent race conditions during concurrent animation triggers.
             const previousPositions = new Map(dotPositionsRef.current);
 
             nextPositions.forEach((pos, id) => {
@@ -171,9 +166,9 @@ const Circle: React.FC = () => {
             dotPositionsRef.current.set(targetPeriodId, 0);
 
 
-            dotRefsRef.current.forEach((dotRef) => {
+            dotRefsRef.current.forEach((element, periodId) => {
                 const currentPosition = previousPositions.get(
-                    dotRef.periodId,
+                    periodId,
                 );
 
 
@@ -182,11 +177,11 @@ const Circle: React.FC = () => {
                 }
 
 
-                gsap.killTweensOf(dotRef.element);
+                gsap.killTweensOf(element);
 
 
                 const animate = contextSafe(() => {
-                    gsap.to(dotRef.element, {
+                    gsap.to(element, {
                         duration: 1,
                         repeat: 0,
                         ease: 'none',
@@ -243,22 +238,10 @@ const Circle: React.FC = () => {
 
     const addDotRef = useCallback(
         (periodId: UUID) => (element: HTMLDivElement | null) => {
-            const existingIndex = dotRefsRef.current.findIndex(
-                (dotRef) => dotRef.periodId === periodId,
-            );
             if (element) {
-                if (existingIndex === -1) {
-                    dotRefsRef.current.push({
-                        element,
-                        periodId,
-                    });
-                } else {
-                    dotRefsRef.current[existingIndex].element = element;
-                }
-                return;
-            }
-            if (existingIndex !== -1) {
-                dotRefsRef.current.splice(existingIndex, 1);
+                dotRefsRef.current.set(periodId, element);
+            } else {
+                dotRefsRef.current.delete(periodId);
             }
         },
         [],
