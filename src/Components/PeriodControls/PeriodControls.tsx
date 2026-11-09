@@ -23,11 +23,8 @@ const PeriodControls: React.FC<PeriodControlsProps> = ({
     const dispatch = useDispatch();
     const activePeriodId = useSelector(getCurrentPeriod);
 
-    // Determine a safe active index; fallback to the first period if not found
-    const activePeriodIndex = useMemo(() => {
-        const idx = findPeriodIndex(periods, activePeriodId);
-        return idx >= 0 ? idx : 0;
-    }, [periods, activePeriodId]);
+    // Determine the active index; may be -1 if not found
+    const activePeriodIndex = useMemo(() => findPeriodIndex(periods, activePeriodId), [periods, activePeriodId]);
 
     const buttonsActive = useMemo(
         () => getButtonsActive(periods.length, activePeriodIndex),
@@ -46,8 +43,8 @@ const PeriodControls: React.FC<PeriodControlsProps> = ({
         dispatch(incrementPeriod());
     }, [dispatch]);
 
-    // If there are no periods at all, render nothing
-    if (!periods.length) {
+    // If there are no periods or the active period is not found, render nothing
+    if (!periods.length || activePeriodIndex < 0) {
         return null;
     }
 
