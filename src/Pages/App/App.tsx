@@ -165,7 +165,6 @@ const App = () => {
         </Suspense>
         {isMobile && <PeriodControls isMobile={isMobile} periods={periods}/>}
       </div>
-      
     </div>
   );
 };
